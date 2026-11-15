@@ -477,6 +477,38 @@ def apply_extensions(dry_run: bool, force: bool) -> list[str]:
     return lines
 
 
+def openchamber_running() -> bool:
+    """Best-effort check; the repo path itself contains 'openchamber', so match the binary."""
+    if not shutil.which("pgrep"):
+        return False
+    for pattern in (
+        "OpenChamber.app/Contents/MacOS/OpenChamber",
+        "openchamber-server",
+        "bin/openchamber serve",
+    ):
+        if subprocess.run(["pgrep", "-f", pattern], capture_output=True).returncode == 0:
+            return True
+    return False
+
+
+def apply_settings(dry_run: bool) -> str:
+    """Merge portable settings over the machine's own, keeping machine-local keys."""
+    src = REPO / SETTINGS_DST
+    if not src.exists():
+        return "skip   openchamber/settings.json (not in repo)"
+    portable = json.loads(src.read_text())
+    existing = read_json(SETTINGS_SRC) if SETTINGS_SRC.exists() else {}
+    merged = {**existing, **portable}
+    rendered = json.dumps(merged, indent=2) + "\n"
+    if SETTINGS_SRC.exists() and SETTINGS_SRC.read_text() == rendered:
+        return f"same   {rel(SETTINGS_SRC)}"
+    if dry_run:
+        return f"write  {rel(SETTINGS_SRC)} (keeps {len(set(existing) & SETTINGS_DROP)} machine-local keys)"
+    saved = backup(SETTINGS_SRC)
+    write_json(SETTINGS_SRC, merged)
+    return f"write  {rel(SETTINGS_SRC)}" + (f" (backup {saved.name})" if saved else "")
+
+
 def cmd_apply(args: argparse.Namespace) -> int:
     if not REPO.joinpath("config").is_dir():
         die("repo has no config/ — run `oc-sync capture` on the source machine first")
@@ -484,13 +516,11 @@ def cmd_apply(args: argparse.Namespace) -> int:
     info(f"applying to {OPENCHAMBER_DIR}")
     if not NODE:
         warn("no node binary found; ${NODE} stays unresolved in opencode.json — set NODE=/path/to/node")
-    if shutil.which("pgrep") and subprocess.run(
-        ["pgrep", "-f", "openchamber"], capture_output=True
-    ).returncode == 0:
+    if openchamber_running():
         warn("OpenChamber looks like it is running; quit it first or it may rewrite these files")
 
     lines: list[str] = []
-    lines.append(apply_file(REPO / SETTINGS_DST, SETTINGS_SRC, args.dry_run))
+    lines.append(apply_settings(args.dry_run))
     for src, dst in PLAIN_FILES:
         lines.append(apply_file(REPO / dst, src, args.dry_run))
     for src, dst in TEMPLATED_FILES:
