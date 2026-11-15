@@ -33,7 +33,7 @@ Provider auth is per machine on purpose: run `opencode auth login` (or import) a
 ## New machine
 
 ```bash
-git clone <this-repo-url> ~/Documents/Projects/my-openchamber
+git clone https://github.com/aaxyat/my-openchamber.git ~/Documents/Projects/my-openchamber
 cd ~/Documents/Projects/my-openchamber
 ./bin/oc-sync apply --dry-run     # see exactly what would change
 ./bin/oc-sync apply
@@ -41,7 +41,7 @@ cd ~/Documents/Projects/my-openchamber
 
 Then quit and reopen OpenChamber, and authenticate providers.
 
-`apply` backs up every file it overwrites as `<name>.bak-<timestamp>` next to the original, so a bad run is one `mv` away from undone.
+`apply` backs up every file it overwrites as `<name>.bak-<timestamp>` next to the original, so a bad run is one `mv` away from undone. On a machine that already has OpenChamber settings, `apply` merges: portable keys are overwritten, machine-local ones (`projects`, `lastDirectory`, window state, ports) are kept.
 
 ## After changing settings on a machine
 
