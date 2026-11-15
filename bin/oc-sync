@@ -1,0 +1,596 @@
+#!/usr/bin/env python3
+"""Sync OpenChamber + OpenCode configuration between the machines I manage.
+
+  oc-sync capture [--memory] [--dry-run]   this machine  -> repo
+  oc-sync apply   [--force] [--dry-run]    repo -> this machine
+  oc-sync status                           show drift between repo and machine
+
+Only an explicit allowlist of files is captured, so identity, pairing tokens
+and relay keys never reach the repository.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+# --- locations -------------------------------------------------------------
+
+HOME = Path(os.environ.get("HOME") or Path.home())
+REPO = Path(__file__).resolve().parent.parent
+
+OPENCHAMBER_DIR = Path(os.environ.get("OPENCHAMBER_CONFIG_DIR") or HOME / ".config/openchamber")
+OPENCODE_DIR = Path(os.environ.get("OPENCODE_CONFIG_DIR") or HOME / ".config/opencode")
+CORTEXKIT_DIR = Path(os.environ.get("CORTEXKIT_CONFIG_DIR") or HOME / ".config/cortexkit")
+SKILLS_LINK_DIR = Path(os.environ.get("SKILLS_LINK_DIR") or HOME / ".agents/skills")
+
+
+def _agent_tools() -> Path:
+    explicit = os.environ.get("AGENT_TOOLS")
+    if explicit:
+        return Path(explicit)
+    shared = Path("/opt/agents/tools")
+    if shared.is_dir():
+        return shared
+    return HOME / ".local/share/agent-tools"
+
+
+AGENT_TOOLS = _agent_tools()
+SKILL_PACKS_DIR = Path(os.environ.get("SKILL_PACKS_DIR") or AGENT_TOOLS / "skill-packs")
+
+def _node_binary() -> str | None:
+    explicit = os.environ.get("NODE")
+    if explicit and Path(explicit).exists():
+        return explicit
+    found = shutil.which("node")
+    if found:
+        return found
+    for candidate in (
+        HOME / ".dsh/dsh-runtimes/dsh-primary-runtime/dependencies/node/bin/node",
+        HOME / ".local/bin/node",
+        Path("/usr/local/bin/node"),
+        Path("/usr/bin/node"),
+    ):
+        if candidate.exists():
+            return str(candidate)
+    return None
+
+
+NODE = _node_binary()
+
+# --- what travels ----------------------------------------------------------
+
+# Machine-local or session-local settings that must not follow a config around.
+SETTINGS_DROP = {
+    "securityScopedBookmarks",  # macOS sandbox bookmarks
+    "desktopLocalPort",         # per-install port
+    "homeDirectory",
+    "lastDirectory",
+    "desktopWindowState",       # window geometry
+    "desktopHosts",             # host registry, holds ids
+    "desktopInitialHostChoiceCompleted",
+    "permissionAutoAccept",     # keyed by session id
+    "projects",                 # absolute paths
+    "activeProjectId",
+}
+
+# Files captured verbatim (no templating needed).
+PLAIN_FILES = [
+    (OPENCHAMBER_DIR / "preferences.json", "config/openchamber/preferences.json"),
+    (OPENCHAMBER_DIR / "plugin-switches.json", "config/openchamber/plugin-switches.json"),
+    (CORTEXKIT_DIR / "magic-context.jsonc", "config/cortexkit/magic-context.jsonc"),
+]
+
+# Files captured with ${HOME} / ${AGENT_TOOLS} placeholders.
+TEMPLATED_FILES = [
+    (OPENCODE_DIR / "opencode.json", "config/opencode/opencode.json"),
+]
+
+SETTINGS_SRC = OPENCHAMBER_DIR / "settings.json"
+SETTINGS_DST = "config/openchamber/settings.json"
+MEMORY_SRC = OPENCHAMBER_DIR / "memory.json"
+MEMORY_DST = "config/openchamber/memory.json"
+SKILLS_MANIFEST = "manifests/skills.json"
+EXTENSIONS_MANIFEST = "manifests/extensions.json"
+
+# --- helpers ---------------------------------------------------------------
+
+
+class SyncError(Exception):
+    pass
+
+
+def info(msg: str) -> None:
+    print(msg)
+
+
+def warn(msg: str) -> None:
+    print(f"warning: {msg}", file=sys.stderr)
+
+
+def die(msg: str) -> None:
+    raise SyncError(msg)
+
+
+def run(cmd: list[str], cwd: Path | None = None) -> str:
+    proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    if proc.returncode != 0:
+        die(f"{' '.join(cmd)} failed:\n{proc.stderr.strip()}")
+    return proc.stdout.strip()
+
+
+def read_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text())
+    except FileNotFoundError:
+        die(f"missing {path}")
+    except json.JSONDecodeError as exc:
+        die(f"{path} is not valid JSON: {exc}")
+
+
+def write_json(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, sort_keys=False) + "\n")
+
+
+def stamp() -> str:
+    return time.strftime("%Y%m%dT%H%M%S")
+
+
+def backup(path: Path) -> Path | None:
+    """Copy an existing file aside before it is overwritten."""
+    if not path.exists():
+        return None
+    target = path.with_name(f"{path.name}.bak-{stamp()}")
+    shutil.copy2(path, target)
+    return target
+
+
+def templatize(text: str) -> str:
+    return text.replace(str(AGENT_TOOLS), "${AGENT_TOOLS}").replace(str(HOME), "${HOME}")
+
+
+def templatize_json(value):
+    """Replace machine paths inside a parsed JSON document."""
+    if isinstance(value, dict):
+        return {k: templatize_json(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [templatize_json(v) for v in value]
+    if isinstance(value, str):
+        if value.endswith("/bin/node") or value.endswith("/node/bin/node"):
+            return "${NODE}"
+        return templatize(value)
+    return value
+
+
+def render(text: str) -> str:
+    out = text
+    if NODE:
+        out = out.replace("${NODE}", NODE)
+    return (
+        out.replace("${AGENT_TOOLS}", str(AGENT_TOOLS))
+        .replace("${SKILL_PACKS_DIR}", str(SKILL_PACKS_DIR))
+        .replace("${HOME}", str(HOME))
+    )
+
+
+def rel(path: Path) -> str:
+    try:
+        return str(path.relative_to(HOME))
+    except ValueError:
+        return str(path)
+
+
+# --- capture ---------------------------------------------------------------
+
+
+def sanitize_settings(data: dict) -> dict:
+    kept = {k: v for k, v in data.items() if k not in SETTINGS_DROP}
+    return json.loads(templatize(json.dumps(kept, indent=2)))
+
+
+def capture_settings() -> dict:
+    data = read_json(SETTINGS_SRC)
+    dropped = sorted(set(data) & SETTINGS_DROP)
+    if dropped:
+        info(f"  dropped machine-local keys: {', '.join(dropped)}")
+    return sanitize_settings(data)
+
+
+def capture_skills() -> dict:
+    if not SKILLS_LINK_DIR.is_dir():
+        die(f"no skills directory at {SKILLS_LINK_DIR}")
+
+    packs: dict[str, dict] = {}
+    links: dict[str, dict] = {}
+    unresolved: list[str] = []
+
+    for entry in sorted(SKILLS_LINK_DIR.iterdir()):
+        if not entry.is_symlink():
+            warn(f"{entry.name} is a real directory, not a managed link — skipped")
+            continue
+        target = Path(os.path.realpath(entry))
+        try:
+            inside = target.relative_to(SKILL_PACKS_DIR)
+        except ValueError:
+            unresolved.append(f"{entry.name} -> {target}")
+            continue
+        pack = inside.parts[0]
+        pack_dir = SKILL_PACKS_DIR / pack
+        if pack not in packs:
+            if not (pack_dir / ".git").exists():
+                unresolved.append(f"{entry.name}: {pack_dir} is not a git checkout")
+                continue
+            packs[pack] = {
+                "repo": run(["git", "remote", "get-url", "origin"], cwd=pack_dir),
+                "commit": run(["git", "rev-parse", "HEAD"], cwd=pack_dir),
+            }
+        links[entry.name] = {"pack": pack, "path": str(Path(*inside.parts[1:]))}
+
+    for line in unresolved:
+        warn(f"skill not pinned: {line}")
+
+    return {"packs": packs, "links": links}
+
+
+def capture_extensions() -> dict:
+    registry = read_json(OPENCHAMBER_DIR / "extensions.json")
+    origins = registry.get("gitOrigins", {})
+    storage = registry.get("storageIds", {})
+    grants = registry.get("capabilityGrants", {})
+    scopes = registry.get("capabilityScopes", {})
+
+    extensions: dict[str, dict] = {}
+    for path in registry.get("paths", []):
+        ext_dir = Path(path)
+        name = ext_dir.name
+        origin = origins.get(path, {}).get("url")
+        if not origin:
+            warn(f"extension {name} has no git origin — skipped")
+            continue
+        if not (ext_dir / ".git").exists():
+            warn(f"extension {name} is not a git checkout — skipped")
+            continue
+        extensions[name] = {
+            "repo": origin,
+            "commit": run(["git", "rev-parse", "HEAD"], cwd=ext_dir),
+            "storageId": storage.get(name),
+            "grants": grants.get(name, []),
+            "scopes": scopes.get(name, {}),
+        }
+
+    return {"extensions": extensions}
+
+
+def cmd_capture(args: argparse.Namespace) -> int:
+    info(f"capturing from {OPENCHAMBER_DIR}")
+
+    settings = capture_settings()
+    if args.dry_run:
+        info(f"  would write {SETTINGS_DST}")
+    else:
+        write_json(REPO / SETTINGS_DST, settings)
+
+    for src, dst in PLAIN_FILES:
+        if not src.exists():
+            warn(f"{src} missing — skipped")
+            continue
+        if args.dry_run:
+            info(f"  would write {dst}")
+        else:
+            (REPO / dst).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, REPO / dst)
+
+    for src, dst in TEMPLATED_FILES:
+        if not src.exists():
+            warn(f"{src} missing — skipped")
+            continue
+        text = json.dumps(templatize_json(read_json(src)), indent=2) + "\n"
+        if args.dry_run:
+            info(f"  would write {dst}")
+        else:
+            (REPO / dst).parent.mkdir(parents=True, exist_ok=True)
+            (REPO / dst).write_text(text)
+
+    if args.memory:
+        if MEMORY_SRC.exists():
+            if args.dry_run:
+                info(f"  would write {MEMORY_DST}")
+            else:
+                (REPO / MEMORY_DST).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(MEMORY_SRC, REPO / MEMORY_DST)
+        else:
+            warn(f"{MEMORY_SRC} missing — skipped")
+
+    skills = capture_skills()
+    if args.dry_run:
+        info(f"  would write {SKILLS_MANIFEST} ({len(skills['links'])} skills, {len(skills['packs'])} packs)")
+    else:
+        write_json(REPO / SKILLS_MANIFEST, skills)
+        info(f"  {len(skills['links'])} skills from {len(skills['packs'])} packs")
+
+    extensions = capture_extensions()
+    if args.dry_run:
+        info(f"  would write {EXTENSIONS_MANIFEST} ({len(extensions['extensions'])} extensions)")
+    else:
+        write_json(REPO / EXTENSIONS_MANIFEST, extensions)
+        info(f"  {len(extensions['extensions'])} extensions")
+
+    info("capture done")
+    return 0
+
+
+# --- apply -----------------------------------------------------------------
+
+
+def apply_file(src: Path, dst: Path, dry_run: bool) -> str:
+    if not src.exists():
+        return f"skip   {rel(dst)} (not in repo)"
+    new = render(src.read_text())
+    if dst.exists() and dst.read_text() == new:
+        return f"same   {rel(dst)}"
+    if dry_run:
+        return f"write  {rel(dst)}"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    saved = backup(dst)
+    dst.write_text(new)
+    return f"write  {rel(dst)}" + (f" (backup {saved.name})" if saved else "")
+
+
+def ensure_pack(name: str, spec: dict, force: bool, dry_run: bool) -> str:
+    pack_dir = SKILL_PACKS_DIR / name
+    commit = spec["commit"]
+    repo = spec["repo"]
+
+    if (pack_dir / ".git").exists():
+        head = run(["git", "rev-parse", "HEAD"], cwd=pack_dir)
+        if head == commit:
+            return f"same   pack {name} @ {commit[:8]}"
+        if dry_run:
+            return f"checkout pack {name} -> {commit[:8]}"
+        run(["git", "fetch", "--depth", "1", "origin", commit], cwd=pack_dir)
+        run(["git", "checkout", "-q", "FETCH_HEAD"], cwd=pack_dir)
+        return f"update pack {name} -> {commit[:8]}"
+
+    if pack_dir.exists() and not force:
+        die(f"{pack_dir} exists but is not a git checkout; move it or pass --force")
+
+    if dry_run:
+        return f"clone  pack {name} @ {commit[:8]}"
+    pack_dir.parent.mkdir(parents=True, exist_ok=True)
+    run(["git", "clone", "--filter=blob:none", "--no-checkout", "--depth", "1", repo, str(pack_dir)])
+    run(["git", "fetch", "--depth", "1", "origin", commit], cwd=pack_dir)
+    run(["git", "checkout", "-q", "FETCH_HEAD"], cwd=pack_dir)
+    return f"clone  pack {name} @ {commit[:8]}"
+
+
+def apply_skills(dry_run: bool, force: bool) -> list[str]:
+    manifest_path = REPO / SKILLS_MANIFEST
+    if not manifest_path.exists():
+        return ["skip   skills (no manifest)"]
+    manifest = read_json(manifest_path)
+    lines: list[str] = []
+
+    for name, spec in manifest.get("packs", {}).items():
+        lines.append(ensure_pack(name, spec, force, dry_run))
+
+    if not dry_run:
+        SKILLS_LINK_DIR.mkdir(parents=True, exist_ok=True)
+
+    created = replaced = kept = 0
+    for name, link in manifest.get("links", {}).items():
+        target = SKILL_PACKS_DIR / link["pack"] / link["path"]
+        if not target.is_dir() and not dry_run:
+            warn(f"skill {name}: {target} missing after checkout — skipped")
+            continue
+        dest = SKILLS_LINK_DIR / name
+        if dest.is_symlink() and os.path.realpath(dest) == os.path.realpath(target):
+            kept += 1
+            continue
+        if dest.exists() or dest.is_symlink():
+            if not force:
+                warn(f"skill {name}: {dest} already exists and points elsewhere — use --force")
+                continue
+            if not dry_run:
+                dest.unlink()
+            replaced += 1
+        else:
+            created += 1
+        if not dry_run:
+            dest.symlink_to(target)
+
+    verb = "would link" if dry_run else "linked"
+    lines.append(f"{verb} {created} skills, replaced {replaced}, unchanged {kept}")
+    return lines
+
+
+def apply_extensions(dry_run: bool, force: bool) -> list[str]:
+    manifest_path = REPO / EXTENSIONS_MANIFEST
+    if not manifest_path.exists():
+        return ["skip   extensions (no manifest)"]
+    manifest = read_json(manifest_path)
+    extensions = manifest.get("extensions", {})
+    lines: list[str] = []
+
+    ext_root = OPENCHAMBER_DIR / "extensions"
+    registry = {
+        "paths": [],
+        "sources": {},
+        "gitOrigins": {},
+        "capabilityGrants": {},
+        "capabilityScopes": {},
+        "storageIds": {},
+    }
+
+    for name, spec in extensions.items():
+        ext_dir = ext_root / name
+        commit = spec["commit"]
+        if (ext_dir / ".git").exists():
+            head = run(["git", "rev-parse", "HEAD"], cwd=ext_dir)
+            if head != commit:
+                if dry_run:
+                    lines.append(f"checkout ext {name} -> {commit[:8]}")
+                else:
+                    run(["git", "fetch", "--depth", "1", "origin", commit], cwd=ext_dir)
+                    run(["git", "checkout", "-q", "FETCH_HEAD"], cwd=ext_dir)
+                    lines.append(f"update ext {name} -> {commit[:8]}")
+            else:
+                lines.append(f"same   ext {name} @ {commit[:8]}")
+        elif ext_dir.exists() and not force:
+            die(f"{ext_dir} exists but is not a git checkout; move it or pass --force")
+        elif dry_run:
+            lines.append(f"clone  ext {name} @ {commit[:8]}")
+        else:
+            ext_root.mkdir(parents=True, exist_ok=True)
+            run(["git", "clone", "--filter=blob:none", "--no-checkout", "--depth", "1", spec["repo"], str(ext_dir)])
+            run(["git", "fetch", "--depth", "1", "origin", commit], cwd=ext_dir)
+            run(["git", "checkout", "-q", "FETCH_HEAD"], cwd=ext_dir)
+            lines.append(f"clone  ext {name} @ {commit[:8]}")
+
+        path = str(ext_dir)
+        registry["paths"].append(path)
+        registry["sources"][path] = "git"
+        registry["gitOrigins"][path] = {"url": spec["repo"]}
+        if spec.get("grants"):
+            registry["capabilityGrants"][name] = spec["grants"]
+        if spec.get("scopes"):
+            registry["capabilityScopes"][name] = spec["scopes"]
+        if spec.get("storageId"):
+            registry["storageIds"][name] = spec["storageId"]
+
+    registry_path = OPENCHAMBER_DIR / "extensions.json"
+    rendered = json.dumps(registry, indent=2) + "\n"
+    if registry_path.exists() and registry_path.read_text() == rendered:
+        lines.append(f"same   {rel(registry_path)}")
+    elif dry_run:
+        lines.append(f"write  {rel(registry_path)}")
+    else:
+        saved = backup(registry_path)
+        write_json(registry_path, registry)
+        lines.append(f"write  {rel(registry_path)}" + (f" (backup {saved.name})" if saved else ""))
+    return lines
+
+
+def cmd_apply(args: argparse.Namespace) -> int:
+    if not REPO.joinpath("config").is_dir():
+        die("repo has no config/ — run `oc-sync capture` on the source machine first")
+
+    info(f"applying to {OPENCHAMBER_DIR}")
+    if not NODE:
+        warn("no node binary found; ${NODE} stays unresolved in opencode.json — set NODE=/path/to/node")
+    if shutil.which("pgrep") and subprocess.run(
+        ["pgrep", "-f", "openchamber"], capture_output=True
+    ).returncode == 0:
+        warn("OpenChamber looks like it is running; quit it first or it may rewrite these files")
+
+    lines: list[str] = []
+    lines.append(apply_file(REPO / SETTINGS_DST, SETTINGS_SRC, args.dry_run))
+    for src, dst in PLAIN_FILES:
+        lines.append(apply_file(REPO / dst, src, args.dry_run))
+    for src, dst in TEMPLATED_FILES:
+        lines.append(apply_file(REPO / dst, src, args.dry_run))
+    if (REPO / MEMORY_DST).exists():
+        lines.append(apply_file(REPO / MEMORY_DST, MEMORY_SRC, args.dry_run))
+
+    if not args.no_skills:
+        lines.extend(apply_skills(args.dry_run, args.force))
+    if not args.no_extensions:
+        lines.extend(apply_extensions(args.dry_run, args.force))
+
+    for line in lines:
+        info(f"  {line}")
+    info("dry run — nothing written" if args.dry_run else "apply done")
+    return 0
+
+
+# --- status ----------------------------------------------------------------
+
+
+def cmd_status(_args: argparse.Namespace) -> int:
+    rows: list[tuple[str, str]] = []
+
+    def check(src: Path, dst: Path, label: str, machine_text=None) -> None:
+        if not src.exists():
+            rows.append((label, "not in repo"))
+        elif not dst.exists():
+            rows.append((label, "missing on machine"))
+        else:
+            expected = render(src.read_text())
+            actual = machine_text() if machine_text else dst.read_text()
+            rows.append((label, "in sync" if expected == actual else "differs"))
+
+    check(
+        REPO / SETTINGS_DST,
+        SETTINGS_SRC,
+        "openchamber/settings.json",
+        lambda: json.dumps(sanitize_settings(read_json(SETTINGS_SRC)), indent=2) + "\n",
+    )
+    for src, dst in PLAIN_FILES:
+        check(REPO / dst, src, rel(src))
+    for src, dst in TEMPLATED_FILES:
+        check(REPO / dst, src, rel(src))
+
+    manifest_path = REPO / SKILLS_MANIFEST
+    if manifest_path.exists():
+        manifest = read_json(manifest_path)
+        linked = missing = 0
+        for name, link in manifest.get("links", {}).items():
+            dest = SKILLS_LINK_DIR / name
+            target = SKILL_PACKS_DIR / link["pack"] / link["path"]
+            if dest.is_symlink() and os.path.realpath(dest) == os.path.realpath(target):
+                linked += 1
+            else:
+                missing += 1
+        rows.append(("skills", f"{linked} linked, {missing} missing"))
+        for name, spec in manifest.get("packs", {}).items():
+            pack_dir = SKILL_PACKS_DIR / name
+            if not (pack_dir / ".git").exists():
+                rows.append((f"pack {name}", "not cloned"))
+                continue
+            head = run(["git", "rev-parse", "HEAD"], cwd=pack_dir)
+            rows.append((f"pack {name}", "pinned" if head == spec["commit"] else f"drift {head[:8]}"))
+
+    width = max(len(label) for label, _ in rows) if rows else 0
+    for label, state in rows:
+        info(f"  {label.ljust(width)}  {state}")
+    return 0
+
+
+# --- cli -------------------------------------------------------------------
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="oc-sync", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    cap = sub.add_parser("capture", help="this machine -> repo")
+    cap.add_argument("--memory", action="store_true", help="also capture agent memory.json")
+    cap.add_argument("--dry-run", action="store_true")
+    cap.set_defaults(func=cmd_capture)
+
+    app = sub.add_parser("apply", help="repo -> this machine")
+    app.add_argument("--dry-run", action="store_true")
+    app.add_argument("--force", action="store_true", help="replace conflicting skill links and non-git dirs")
+    app.add_argument("--no-skills", action="store_true")
+    app.add_argument("--no-extensions", action="store_true")
+    app.set_defaults(func=cmd_apply)
+
+    st = sub.add_parser("status", help="compare repo with this machine")
+    st.set_defaults(func=cmd_status)
+
+    args = parser.parse_args()
+    try:
+        return args.func(args)
+    except SyncError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

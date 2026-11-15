@@ -1,0 +1,190 @@
+{
+  "packs": {
+    "anthropic": {
+      "repo": "https://github.com/anthropics/skills.git",
+      "commit": "2c5958ecac7cee2b583967a2c4981d0f4a75c579"
+    },
+    "cursor": {
+      "repo": "https://github.com/cursor/plugins.git",
+      "commit": "24621dbcc59e205a7faadb0e06d540f91712b5cc"
+    },
+    "mattpocock": {
+      "repo": "https://github.com/mattpocock/skills.git",
+      "commit": "5863806dd4e15c63174bee4e7515a4256792ecfa"
+    }
+  },
+  "links": {
+    "canvas-design": {
+      "pack": "anthropic",
+      "path": "skills/canvas-design"
+    },
+    "check-compiler-errors": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/check-compiler-errors"
+    },
+    "cli-for-agents": {
+      "pack": "cursor",
+      "path": "cli-for-agent/skills/cli-for-agents"
+    },
+    "code-review": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/code-review"
+    },
+    "codebase-design": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/codebase-design"
+    },
+    "deslop": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/deslop"
+    },
+    "diagnosing-bugs": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/diagnosing-bugs"
+    },
+    "doc-coauthoring": {
+      "pack": "anthropic",
+      "path": "skills/doc-coauthoring"
+    },
+    "domain-modeling": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/domain-modeling"
+    },
+    "fix-ci": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/fix-ci"
+    },
+    "fix-merge-conflicts": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/fix-merge-conflicts"
+    },
+    "frontend-design": {
+      "pack": "anthropic",
+      "path": "skills/frontend-design"
+    },
+    "get-pr-comments": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/get-pr-comments"
+    },
+    "grilling": {
+      "pack": "mattpocock",
+      "path": "skills/productivity/grilling"
+    },
+    "handoff": {
+      "pack": "mattpocock",
+      "path": "skills/productivity/handoff"
+    },
+    "implement": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/implement"
+    },
+    "improve-codebase-architecture": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/improve-codebase-architecture"
+    },
+    "loop-on-ci": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/loop-on-ci"
+    },
+    "make-pr-easy-to-review": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/make-pr-easy-to-review"
+    },
+    "mcp-builder": {
+      "pack": "anthropic",
+      "path": "skills/mcp-builder"
+    },
+    "new-branch-and-pr": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/new-branch-and-pr"
+    },
+    "pr": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/pr"
+    },
+    "prototype": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/prototype"
+    },
+    "research": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/research"
+    },
+    "retro": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/retro"
+    },
+    "review-and-ship": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/review-and-ship"
+    },
+    "run-smoke-tests": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/run-smoke-tests"
+    },
+    "skill-creator": {
+      "pack": "anthropic",
+      "path": "skills/skill-creator"
+    },
+    "tdd": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/tdd"
+    },
+    "teach": {
+      "pack": "mattpocock",
+      "path": "skills/productivity/teach"
+    },
+    "theme-factory": {
+      "pack": "anthropic",
+      "path": "skills/theme-factory"
+    },
+    "thermo-nuclear-code-quality-review": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/thermo-nuclear-code-quality-review"
+    },
+    "to-questionnaire": {
+      "pack": "mattpocock",
+      "path": "skills/productivity/to-questionnaire"
+    },
+    "to-spec": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/to-spec"
+    },
+    "to-tickets": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/to-tickets"
+    },
+    "verify-this": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/verify-this"
+    },
+    "wait-what": {
+      "pack": "mattpocock",
+      "path": "skills/productivity/wait-what"
+    },
+    "webapp-testing": {
+      "pack": "anthropic",
+      "path": "skills/webapp-testing"
+    },
+    "weekly-review": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/weekly-review"
+    },
+    "what-did-i-get-done": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/what-did-i-get-done"
+    },
+    "wizard": {
+      "pack": "mattpocock",
+      "path": "skills/engineering/wizard"
+    },
+    "workflow-from-chats": {
+      "pack": "cursor",
+      "path": "cursor-team-kit/skills/workflow-from-chats"
+    },
+    "writing-for-agents": {
+      "pack": "mattpocock",
+      "path": "skills/productivity/writing-for-agents"
+    }
+  }
+}

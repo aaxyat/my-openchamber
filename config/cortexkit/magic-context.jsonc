@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cortexkit/magic-context/master/assets/magic-context.schema.json",
+  "historian": {
+    "opencode": {
+      "model": "mistral/deepseek-v4-1-flash-1017",
+      "fallback_models": [
+        "mistral/zai-glm-5-3-flash",
+        "mistral/mistral-medium-latest"
+      ]
+    }
+  },
+  "dreamer": {
+    "opencode": {
+      "model": "mistral/mistral-small-latest",
+      "fallback_models": ["mistral/ministral-8b-latest"]
+    }
+  }
+}

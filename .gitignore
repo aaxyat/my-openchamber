@@ -1,0 +1,6 @@
+# never commit machine identity or secrets — `capture` only copies an allowlist,
+# this file is the second line of defence
+*.local.json
+.env
+.env.*
+.DS_Store

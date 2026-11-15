@@ -1,0 +1,75 @@
+{
+  "desktopSplashColors": {
+    "bgLight": "#fdfcfa",
+    "fgLight": "#262521",
+    "bgDark": "#120f0e",
+    "fgDark": "#ebe7dc"
+  },
+  "desktopDefaultHostId": "local",
+  "desktopKeepAwakeEnabled": true,
+  "agentImageToolEnabled": false,
+  "agentNotifyToolEnabled": true,
+  "agentMemoryToolEnabled": true,
+  "agentMemoryDreamingEnabled": true,
+  "agentMemoryDreamingModel": "",
+  "agentMemoryDreamingVariant": "",
+  "agentUsageToolEnabled": true,
+  "permissionDefaultMode": "auto",
+  "privateRelay": {
+    "enabled": true,
+    "relayUrl": "wss://relay.openchamber.dev/ws"
+  },
+  "lightThemeId": "openchamber-light",
+  "darkThemeId": "openchamber-dark",
+  "notifyOnSubtasks": true,
+  "notifyOnCompletion": true,
+  "notifyOnPullRequests": true,
+  "notifyOnError": true,
+  "notifyOnQuestion": true,
+  "notificationTemplates": {
+    "completion": {
+      "title": "",
+      "message": ""
+    },
+    "error": {
+      "title": "",
+      "message": ""
+    },
+    "question": {
+      "title": "",
+      "message": ""
+    },
+    "subtask": {
+      "title": "",
+      "message": ""
+    }
+  },
+  "lastSelectedModel": "mistral/deepseek-v4-1-flash-1017",
+  "favoriteModels": [],
+  "recentModels": [
+    {
+      "providerID": "mistral",
+      "modelID": "deepseek-v4-1-flash-1017"
+    }
+  ],
+  "hiddenModels": [],
+  "collapsedModelProviders": [],
+  "customProviderIcons": {},
+  "recentAgents": [],
+  "favoriteAgents": [],
+  "recentEfforts": {
+    "mistral/deepseek-v4-1-flash-1017": [
+      "none",
+      "default",
+      "max"
+    ]
+  },
+  "lastUsedEfforts": {
+    "mistral/deepseek-v4-1-flash-1017": "max"
+  },
+  "sessionTabsEnabled": true,
+  "followUpBehavior": "steer",
+  "defaultModel": "mistral/deepseek-v4-1-flash-1017",
+  "defaultAgent": "build",
+  "defaultVariant": "max"
+}

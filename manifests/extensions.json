@@ -1,0 +1,25 @@
+{
+  "extensions": {
+    "tps-meter": {
+      "repo": "https://github.com/aaxyat/TokenMeter",
+      "commit": "cb6de1dc4897eacebc8da079feb44c37ea73d7da",
+      "storageId": "be1698d3-fc01-4425-a04e-5499845bde5f",
+      "grants": [
+        "service"
+      ],
+      "scopes": {
+        "service": {
+          "exec": [],
+          "sockets": []
+        }
+      }
+    },
+    "resource-monitor": {
+      "repo": "https://github.com/openchamber/openchamber-resource-monitor",
+      "commit": "ea43f7f650aae2cc97eafd978fc8981cfded42a8",
+      "storageId": "8a10a767-fdf2-4c76-a91e-3199b5c5aef7",
+      "grants": [],
+      "scopes": {}
+    }
+  }
+}

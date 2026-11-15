@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "fields": {
+    "lightThemeId": {
+      "updatedAt": 1794590677911,
+      "value": "openchamber-light"
+    },
+    "darkThemeId": {
+      "updatedAt": 1794590677911,
+      "value": "openchamber-dark"
+    },
+    "notifyOnSubtasks": {
+      "updatedAt": 1794590677911,
+      "value": true
+    },
+    "notifyOnCompletion": {
+      "updatedAt": 1794590677911,
+      "value": true
+    },
+    "notifyOnPullRequests": {
+      "updatedAt": 1794590677911,
+      "value": true
+    },
+    "notifyOnError": {
+      "updatedAt": 1794590677911,
+      "value": true
+    },
+    "notifyOnQuestion": {
+      "updatedAt": 1794590677911,
+      "value": true
+    },
+    "notificationTemplates": {
+      "updatedAt": 1794590677911,
+      "value": {
+        "completion": {
+          "title": "",
+          "message": ""
+        },
+        "error": {
+          "title": "",
+          "message": ""
+        },
+        "question": {
+          "title": "",
+          "message": ""
+        },
+        "subtask": {
+          "title": "",
+          "message": ""
+        }
+      }
+    },
+    "lastSelectedModel": {
+      "updatedAt": 1794590769472,
+      "value": "mistral/deepseek-v4-1-flash-1017"
+    },
+    "favoriteModels": {
+      "updatedAt": 1794590769472,
+      "value": []
+    },
+    "recentModels": {
+      "updatedAt": 1794590769472,
+      "value": [
+        {
+          "providerID": "mistral",
+          "modelID": "deepseek-v4-1-flash-1017"
+        }
+      ]
+    },
+    "hiddenModels": {
+      "updatedAt": 1794590769472,
+      "value": []
+    },
+    "collapsedModelProviders": {
+      "updatedAt": 1794590769472,
+      "value": []
+    },
+    "customProviderIcons": {
+      "updatedAt": 1794590769472,
+      "value": {}
+    },
+    "recentAgents": {
+      "updatedAt": 1794590769472,
+      "value": []
+    },
+    "favoriteAgents": {
+      "updatedAt": 1794590769472,
+      "value": []
+    },
+    "recentEfforts": {
+      "updatedAt": 1794591832315,
+      "value": {
+        "mistral/deepseek-v4-1-flash-1017": [
+          "none",
+          "default",
+          "max"
+        ]
+      }
+    },
+    "lastUsedEfforts": {
+      "updatedAt": 1794591908725,
+      "value": {
+        "mistral/deepseek-v4-1-flash-1017": "max"
+      }
+    },
+    "sessionTabsEnabled": {
+      "updatedAt": 1794592391084,
+      "value": true
+    },
+    "followUpBehavior": {
+      "updatedAt": 1794592429077,
+      "value": "steer"
+    },
+    "defaultModel": {
+      "updatedAt": 1794592452677,
+      "value": "mistral/deepseek-v4-1-flash-1017"
+    },
+    "defaultAgent": {
+      "updatedAt": 1794592457004,
+      "value": "build"
+    },
+    "defaultVariant": {
+      "updatedAt": 1794592458900,
+      "value": "max"
+    }
+  }
+}
