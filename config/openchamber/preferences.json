@@ -50,20 +50,20 @@
         }
       }
     },
-    "lastSelectedModel": {
-      "updatedAt": 1794590769472,
-      "value": "mistral/deepseek-v4-1-flash-1017"
-    },
     "favoriteModels": {
       "updatedAt": 1794590769472,
       "value": []
     },
     "recentModels": {
-      "updatedAt": 1794590769472,
+      "updatedAt": 1794796039059,
       "value": [
         {
           "providerID": "mistral",
           "modelID": "deepseek-v4-1-flash-1017"
+        },
+        {
+          "providerID": "9router",
+          "modelID": "ag/gemini-3.8-flash"
         }
       ]
     },
@@ -88,20 +88,28 @@
       "value": []
     },
     "recentEfforts": {
-      "updatedAt": 1794591832315,
+      "updatedAt": 1794796039059,
       "value": {
         "mistral/deepseek-v4-1-flash-1017": [
           "none",
           "default",
           "max"
+        ],
+        "9router/ag/gemini-3.8-flash": [
+          "high"
         ]
       }
     },
     "lastUsedEfforts": {
-      "updatedAt": 1794591908725,
+      "updatedAt": 1794796039059,
       "value": {
-        "mistral/deepseek-v4-1-flash-1017": "max"
+        "mistral/deepseek-v4-1-flash-1017": "max",
+        "9router/ag/gemini-3.8-flash": "high"
       }
+    },
+    "lastSelectedModel": {
+      "updatedAt": 1794590769472,
+      "value": "mistral/deepseek-v4-1-flash-1017"
     },
     "sessionTabsEnabled": {
       "updatedAt": 1794592391084,

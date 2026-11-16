@@ -62,5 +62,142 @@
   },
   "websearch": {
     "provider": "parallel"
-  }
+  },
+  "provider": {
+    "9router": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "9Router",
+      "options": {
+        "baseURL": "https://api.722411.xyz/v1",
+        "apiKey": "{file:~/.config/opencode/9router-api-key}"
+      },
+      "models": {
+        "ag/gemini-3.8-flash": {
+          "name": "Gemini 3.8 Flash",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "ag/gemini-3.8-flash-high": {
+          "name": "Gemini 3.8 Flash (high)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "ag/gemini-3.8-flash-medium": {
+          "name": "Gemini 3.8 Flash (medium)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "ag/gemini-3.8-flash-low": {
+          "name": "Gemini 3.8 Flash (low)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "ag/claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6 (Antigravity)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "ag/claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking (Antigravity)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "ag/gpt-oss-120b-medium": {
+          "name": "GPT-OSS 120B (Antigravity)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "oc/mimo-v2.6-flash-free": {
+          "name": "MiMo v2.6 Flash (free)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "oc/big-pickle": {
+          "name": "Big Pickle (free)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "oc/space-bunny-free": {
+          "name": "Space Bunny (free)",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "model": "9router/ag/gemini-3.8-flash",
+  "disabled_providers": [
+    "cloudflare-ai-gateway",
+    "cloudflare-workers-ai"
+  ]
 }

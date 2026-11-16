@@ -16,7 +16,7 @@
   "agentUsageToolEnabled": true,
   "permissionDefaultMode": "auto",
   "privateRelay": {
-    "enabled": true,
+    "enabled": false,
     "relayUrl": "wss://relay.openchamber.dev/ws"
   },
   "lightThemeId": "openchamber-light",
@@ -44,12 +44,15 @@
       "message": ""
     }
   },
-  "lastSelectedModel": "mistral/deepseek-v4-1-flash-1017",
   "favoriteModels": [],
   "recentModels": [
     {
       "providerID": "mistral",
       "modelID": "deepseek-v4-1-flash-1017"
+    },
+    {
+      "providerID": "9router",
+      "modelID": "ag/gemini-3.8-flash"
     }
   ],
   "hiddenModels": [],
@@ -62,11 +65,16 @@
       "none",
       "default",
       "max"
+    ],
+    "9router/ag/gemini-3.8-flash": [
+      "high"
     ]
   },
   "lastUsedEfforts": {
-    "mistral/deepseek-v4-1-flash-1017": "max"
+    "mistral/deepseek-v4-1-flash-1017": "max",
+    "9router/ag/gemini-3.8-flash": "high"
   },
+  "lastSelectedModel": "mistral/deepseek-v4-1-flash-1017",
   "sessionTabsEnabled": true,
   "followUpBehavior": "steer",
   "defaultModel": "mistral/deepseek-v4-1-flash-1017",
