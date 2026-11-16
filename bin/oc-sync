@@ -78,6 +78,7 @@ SETTINGS_DROP = {
     "permissionAutoAccept",     # keyed by session id
     "projects",                 # absolute paths
     "activeProjectId",
+    "desktopInstallId",         # per-install id
 }
 
 # Files captured verbatim (no templating needed).
@@ -92,6 +93,9 @@ TEMPLATED_FILES = [
     (OPENCODE_DIR / "opencode.json", "config/opencode/opencode.json"),
 ]
 
+# opencode.json keys that are platform-specific rather than portable.
+OPENCODE_DROP = {"shell"}
+
 SETTINGS_SRC = OPENCHAMBER_DIR / "settings.json"
 SETTINGS_DST = "config/openchamber/settings.json"
 MEMORY_SRC = OPENCHAMBER_DIR / "memory.json"
@@ -105,6 +109,10 @@ REQUIRED_LOCAL_FILES = [
     (
         OPENCODE_DIR / "stitch-api-key",
         "Stitch MCP: the server connects without it, but every tool call fails — create one at stitch.withgoogle.com → Settings → API Keys",
+    ),
+    (
+        OPENCODE_DIR / "9router-api-key",
+        "9router provider: every model call fails — copy the key from the 9router dashboard",
     ),
 ]
 
@@ -194,6 +202,26 @@ def templatize(text: str) -> str:
     )
 
 
+# Keys whose value is a credential. A literal value here would be committed.
+SECRET_KEYS = {"apikey", "api_key", "token", "password", "secret", "clientsecret", "client_token"}
+
+
+def check_no_secrets(value, trail: str = "") -> None:
+    """Fail capture rather than write a credential into the repository."""
+    if isinstance(value, dict):
+        for k, v in value.items():
+            here = f"{trail}.{k}" if trail else k
+            if k.lower() in SECRET_KEYS and isinstance(v, str) and v and not v.startswith(("{env:", "{file:")):
+                die(
+                    f"{here} holds a literal secret; move it to a file and reference it as "
+                    f'{{file:~/.config/opencode/<name>}} before capturing'
+                )
+            check_no_secrets(v, here)
+    elif isinstance(value, list):
+        for i, v in enumerate(value):
+            check_no_secrets(v, f"{trail}[{i}]")
+
+
 def templatize_json(value):
     """Replace machine paths inside a parsed JSON document."""
     if isinstance(value, dict):
@@ -273,7 +301,7 @@ def capture_skills() -> dict:
                 "repo": run(["git", "remote", "get-url", "origin"], cwd=pack_dir),
                 "commit": run(["git", "rev-parse", "HEAD"], cwd=pack_dir),
             }
-        links[entry.name] = {"pack": pack, "path": str(Path(*inside.parts[1:]))}
+        links[entry.name] = {"pack": pack, "path": Path(*inside.parts[1:]).as_posix()}
 
     for line in unresolved:
         warn(f"skill not pinned: {line}")
@@ -333,7 +361,13 @@ def cmd_capture(args: argparse.Namespace) -> int:
         if not src.exists():
             warn(f"{src} missing — skipped")
             continue
-        text = json.dumps(templatize_json(read_json(src)), indent=2) + "\n"
+        data = read_json(src)
+        check_no_secrets(data)
+        dropped = sorted(set(data) & OPENCODE_DROP)
+        if dropped:
+            info(f"  dropped platform-specific keys: {', '.join(dropped)}")
+        data = {k: v for k, v in data.items() if k not in OPENCODE_DROP}
+        text = json.dumps(templatize_json(data), indent=2) + "\n"
         if args.dry_run:
             info(f"  would write {dst}")
         else:
@@ -351,6 +385,19 @@ def cmd_capture(args: argparse.Namespace) -> int:
             warn(f"{MEMORY_SRC} missing — skipped")
 
     skills = capture_skills()
+    manifest_path = REPO / SKILLS_MANIFEST
+    if manifest_path.exists():
+        # Never silently drop pins: a machine whose links live outside the pack
+        # layout would otherwise wipe the manifest down to nothing.
+        previous = read_json(manifest_path)
+        lost = sorted(set(previous.get("links", {})) - set(skills["links"]))
+        if lost:
+            warn(
+                f"{len(lost)} pinned skill(s) did not resolve on this machine and stay in the "
+                f"manifest: {', '.join(lost)}"
+            )
+            skills["links"].update(previous["links"])
+            skills["packs"].update(previous.get("packs", {}))
     if args.dry_run:
         info(f"  would write {SKILLS_MANIFEST} ({len(skills['links'])} skills, {len(skills['packs'])} packs)")
     else:
