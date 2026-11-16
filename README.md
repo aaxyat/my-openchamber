@@ -25,6 +25,7 @@ Skills and extensions are **pinned, not vendored**: the repo stores repo URL + c
 - `git-credential-endpoint.json` — per-install secret
 - `~/.config/opencode/service.json` — OpenCode server password
 - `~/.mcp-auth/`, `~/.dsh/.credentials.yaml` — provider credentials
+- `~/.config/opencode/stitch-api-key` — Stitch MCP key; `opencode.json` reaches it as `{file:~/.config/opencode/stitch-api-key}` so the secret never enters this repo
 - `chats/`, `memory.json` (unless `--memory`), `message-search.sqlite*` — session data
 - `settings.json` keys: `projects`, `activeProjectId`, `lastDirectory`, `homeDirectory`, `desktopLocalPort`, `desktopWindowState`, `desktopHosts`, `securityScopedBookmarks`, `permissionAutoAccept`
 
@@ -62,6 +63,7 @@ git push
   - `playwright-mcp/` — `@playwright/mcp` + browsers
   - `cloudflare-mcp-oauth/` — `mcp-remote` bridge
 - Cloudflare MCP auth copied to `~/.mcp-auth`
+- Stitch MCP key at `~/.config/opencode/stitch-api-key`, mode `600`, no trailing newline (create it at stitch.withgoogle.com → Stitch settings → API Keys). Without it `stitch` still reports connected — `/mcp` initialize needs no auth — but every tool call fails with "missing required authentication credential"
 
 ## Environment overrides
 

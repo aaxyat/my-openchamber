@@ -48,6 +48,15 @@
         "type": "remote",
         "url": "https://mcp.canva.com/mcp",
         "disabled": false
+      },
+      "stitch": {
+        "type": "remote",
+        "url": "https://stitch.googleapis.com/mcp",
+        "oauth": false,
+        "headers": {
+          "X-Goog-Api-Key": "{file:~/.config/opencode/stitch-api-key}"
+        },
+        "codemode": false
       }
     }
   },

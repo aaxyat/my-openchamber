@@ -154,6 +154,10 @@
       "pack": "mattpocock",
       "path": "skills/engineering/to-tickets"
     },
+    "unslop": {
+      "pack": "cursor",
+      "path": "pstack/skills/unslop"
+    },
     "verify-this": {
       "pack": "cursor",
       "path": "cursor-team-kit/skills/verify-this"
