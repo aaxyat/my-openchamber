@@ -148,6 +148,30 @@ def write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=False) + "\n")
 
 
+def is_link(p: Path) -> bool:
+    return p.is_symlink() or (hasattr(p, "is_junction") and p.is_junction())
+
+
+def unlink_any(p: Path) -> None:
+    if is_link(p):
+        p.unlink()
+    elif p.is_dir():
+        shutil.rmtree(p)
+    else:
+        p.unlink()
+
+
+def make_link(target: Path, dest: Path) -> None:
+    try:
+        dest.symlink_to(target, target_is_directory=True)
+    except OSError:
+        if sys.platform == "win32":
+            import _winapi
+            _winapi.CreateJunction(str(target), str(dest))
+        else:
+            raise
+
+
 def stamp() -> str:
     return time.strftime("%Y%m%dT%H%M%S")
 
@@ -162,7 +186,12 @@ def backup(path: Path) -> Path | None:
 
 
 def templatize(text: str) -> str:
-    return text.replace(str(AGENT_TOOLS), "${AGENT_TOOLS}").replace(str(HOME), "${HOME}")
+    return (
+        text.replace(str(AGENT_TOOLS), "${AGENT_TOOLS}")
+        .replace(AGENT_TOOLS.as_posix(), "${AGENT_TOOLS}")
+        .replace(str(HOME), "${HOME}")
+        .replace(HOME.as_posix(), "${HOME}")
+    )
 
 
 def templatize_json(value):
@@ -172,7 +201,11 @@ def templatize_json(value):
     if isinstance(value, list):
         return [templatize_json(v) for v in value]
     if isinstance(value, str):
-        if value.endswith("/bin/node") or value.endswith("/node/bin/node"):
+        if (
+            value.endswith("/bin/node")
+            or value.endswith("/node/bin/node")
+            or value.lower().endswith("node.exe")
+        ):
             return "${NODE}"
         return templatize(value)
     return value
@@ -181,11 +214,11 @@ def templatize_json(value):
 def render(text: str) -> str:
     out = text
     if NODE:
-        out = out.replace("${NODE}", NODE)
+        out = out.replace("${NODE}", Path(NODE).as_posix())
     return (
-        out.replace("${AGENT_TOOLS}", str(AGENT_TOOLS))
-        .replace("${SKILL_PACKS_DIR}", str(SKILL_PACKS_DIR))
-        .replace("${HOME}", str(HOME))
+        out.replace("${AGENT_TOOLS}", AGENT_TOOLS.as_posix())
+        .replace("${SKILL_PACKS_DIR}", SKILL_PACKS_DIR.as_posix())
+        .replace("${HOME}", HOME.as_posix())
     )
 
 
@@ -221,7 +254,7 @@ def capture_skills() -> dict:
     unresolved: list[str] = []
 
     for entry in sorted(SKILLS_LINK_DIR.iterdir()):
-        if not entry.is_symlink():
+        if not is_link(entry):
             warn(f"{entry.name} is a real directory, not a managed link — skipped")
             continue
         target = Path(os.path.realpath(entry))
@@ -342,6 +375,27 @@ def apply_file(src: Path, dst: Path, dry_run: bool) -> str:
     if not src.exists():
         return f"skip   {rel(dst)} (not in repo)"
     new = render(src.read_text())
+    if dst.name == "opencode.json":
+        # Preserve local machine-specific provider/shell/model if present
+        local_cfg = {}
+        for candidate in (OPENCODE_DIR / "opencode.jsonc", dst):
+            if candidate.exists():
+                try:
+                    raw = candidate.read_text()
+                    lines = [l for l in raw.splitlines() if not l.strip().startswith("//")]
+                    local_cfg = json.loads("\n".join(lines))
+                    break
+                except Exception:
+                    pass
+        if local_cfg:
+            try:
+                new_data = json.loads(new)
+                for k in ("provider", "shell", "model"):
+                    if k in local_cfg and k not in new_data:
+                        new_data[k] = local_cfg[k]
+                new = json.dumps(new_data, indent=2) + "\n"
+            except Exception:
+                pass
     if dst.exists() and dst.read_text() == new:
         return f"same   {rel(dst)}"
     if dry_run:
@@ -399,20 +453,20 @@ def apply_skills(dry_run: bool, force: bool) -> list[str]:
             warn(f"skill {name}: {target} missing after checkout — skipped")
             continue
         dest = SKILLS_LINK_DIR / name
-        if dest.is_symlink() and os.path.realpath(dest) == os.path.realpath(target):
+        if is_link(dest) and os.path.realpath(dest) == os.path.realpath(target):
             kept += 1
             continue
-        if dest.exists() or dest.is_symlink():
+        if dest.exists() or is_link(dest):
             if not force:
                 warn(f"skill {name}: {dest} already exists and points elsewhere — use --force")
                 continue
             if not dry_run:
-                dest.unlink()
+                unlink_any(dest)
             replaced += 1
         else:
             created += 1
         if not dry_run:
-            dest.symlink_to(target)
+            make_link(target, dest)
 
     verb = "would link" if dry_run else "linked"
     lines.append(f"{verb} {created} skills, replaced {replaced}, unchanged {kept}")
@@ -488,6 +542,16 @@ def apply_extensions(dry_run: bool, force: bool) -> list[str]:
 
 def openchamber_running() -> bool:
     """Best-effort check; the repo path itself contains 'openchamber', so match the binary."""
+    if sys.platform == "win32":
+        try:
+            out = subprocess.run(
+                ["tasklist", "/fi", "IMAGENAME eq OpenChamber.exe", "/fo", "csv", "/nh"],
+                capture_output=True,
+                text=True,
+            ).stdout
+            return "OpenChamber.exe" in out
+        except Exception:
+            return False
     if not shutil.which("pgrep"):
         return False
     for pattern in (
@@ -585,7 +649,7 @@ def cmd_status(_args: argparse.Namespace) -> int:
         for name, link in manifest.get("links", {}).items():
             dest = SKILLS_LINK_DIR / name
             target = SKILL_PACKS_DIR / link["pack"] / link["path"]
-            if dest.is_symlink() and os.path.realpath(dest) == os.path.realpath(target):
+            if is_link(dest) and os.path.realpath(dest) == os.path.realpath(target):
                 linked += 1
             else:
                 missing += 1
