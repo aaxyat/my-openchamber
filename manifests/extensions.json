@@ -2,7 +2,7 @@
   "extensions": {
     "tps-meter": {
       "repo": "https://github.com/aaxyat/TokenMeter",
-      "commit": "cb6de1dc4897eacebc8da079feb44c37ea73d7da",
+      "commit": "ad1f4736f9c891f7b670717a5899b1b4bc10e8a9",
       "storageId": "be1698d3-fc01-4425-a04e-5499845bde5f",
       "grants": [
         "service"
