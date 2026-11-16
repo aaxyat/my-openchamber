@@ -418,32 +418,51 @@ def cmd_capture(args: argparse.Namespace) -> int:
 # --- apply -----------------------------------------------------------------
 
 
+def same_json(a: str, b: str) -> bool:
+    """True when two documents differ only in key order or whitespace."""
+    try:
+        return json.loads(a) == json.loads(b)
+    except Exception:
+        return False
+
+
+# opencode.json keys a machine keeps for itself when apply runs.
+LOCAL_OPENCODE_KEYS = ("provider", "shell", "model")
+
+
+def merge_opencode(new: str, dst: Path) -> str:
+    """Keep a machine's own provider/shell/model where the repo has none."""
+    local_cfg = {}
+    for candidate in (OPENCODE_DIR / "opencode.jsonc", dst):
+        if candidate.exists():
+            try:
+                raw = candidate.read_text()
+                lines = [l for l in raw.splitlines() if not l.strip().startswith("//")]
+                local_cfg = json.loads("\n".join(lines))
+                break
+            except Exception:
+                pass
+    if not local_cfg:
+        return new
+    try:
+        new_data = json.loads(new)
+        for k in LOCAL_OPENCODE_KEYS:
+            if k in local_cfg and k not in new_data:
+                new_data[k] = local_cfg[k]
+        return json.dumps(new_data, indent=2) + "\n"
+    except Exception:
+        return new
+
+
 def apply_file(src: Path, dst: Path, dry_run: bool) -> str:
     if not src.exists():
         return f"skip   {rel(dst)} (not in repo)"
     new = render(src.read_text())
     if dst.name == "opencode.json":
-        # Preserve local machine-specific provider/shell/model if present
-        local_cfg = {}
-        for candidate in (OPENCODE_DIR / "opencode.jsonc", dst):
-            if candidate.exists():
-                try:
-                    raw = candidate.read_text()
-                    lines = [l for l in raw.splitlines() if not l.strip().startswith("//")]
-                    local_cfg = json.loads("\n".join(lines))
-                    break
-                except Exception:
-                    pass
-        if local_cfg:
-            try:
-                new_data = json.loads(new)
-                for k in ("provider", "shell", "model"):
-                    if k in local_cfg and k not in new_data:
-                        new_data[k] = local_cfg[k]
-                new = json.dumps(new_data, indent=2) + "\n"
-            except Exception:
-                pass
+        new = merge_opencode(new, dst)
     if dst.exists() and dst.read_text() == new:
+        return f"same   {rel(dst)}"
+    if dst.exists() and same_json(dst.read_text(), new):
         return f"same   {rel(dst)}"
     if dry_run:
         return f"write  {rel(dst)}"
@@ -622,6 +641,8 @@ def apply_settings(dry_run: bool) -> str:
     rendered = json.dumps(merged, indent=2) + "\n"
     if SETTINGS_SRC.exists() and SETTINGS_SRC.read_text() == rendered:
         return f"same   {rel(SETTINGS_SRC)}"
+    if SETTINGS_SRC.exists() and same_json(SETTINGS_SRC.read_text(), rendered):
+        return f"same   {rel(SETTINGS_SRC)}"
     if dry_run:
         return f"write  {rel(SETTINGS_SRC)} (keeps {len(set(existing) & SETTINGS_DROP)} machine-local keys)"
     saved = backup(SETTINGS_SRC)
@@ -668,15 +689,15 @@ def cmd_apply(args: argparse.Namespace) -> int:
 def cmd_status(_args: argparse.Namespace) -> int:
     rows: list[tuple[str, str]] = []
 
-    def check(src: Path, dst: Path, label: str, machine_text=None) -> None:
+    def check(src: Path, dst: Path, label: str, machine_text=None, expected_text=None) -> None:
         if not src.exists():
             rows.append((label, "not in repo"))
         elif not dst.exists():
             rows.append((label, "missing on machine"))
         else:
-            expected = render(src.read_text())
+            expected = expected_text() if expected_text else render(src.read_text())
             actual = machine_text() if machine_text else dst.read_text()
-            rows.append((label, "in sync" if expected == actual else "differs"))
+            rows.append((label, "in sync" if expected == actual or same_json(expected, actual) else "differs"))
 
     check(
         REPO / SETTINGS_DST,
@@ -687,7 +708,12 @@ def cmd_status(_args: argparse.Namespace) -> int:
     for src, dst in PLAIN_FILES:
         check(REPO / dst, src, rel(src))
     for src, dst in TEMPLATED_FILES:
-        check(REPO / dst, src, rel(src))
+        check(
+            REPO / dst,
+            src,
+            rel(src),
+            expected_text=lambda s=src, d=dst: merge_opencode(render((REPO / d).read_text()), s),
+        )
 
     manifest_path = REPO / SKILLS_MANIFEST
     if manifest_path.exists():
