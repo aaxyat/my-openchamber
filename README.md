@@ -28,7 +28,7 @@ Skills and extensions are **pinned, not vendored**: the repo stores repo URL + c
 - `~/.config/opencode/stitch-api-key` — Stitch MCP key; `opencode.json` reaches it as `{file:~/.config/opencode/stitch-api-key}` so the secret never enters this repo
 - `~/.config/opencode/9router-api-key` — 9router provider key, referenced the same way; `capture` refuses to write a literal `apiKey`/`token`/`password` and tells you to move it to a file
 - `chats/`, `memory.json` (unless `--memory`), `message-search.sqlite*` — session data
-- `settings.json` keys: `projects`, `activeProjectId`, `lastDirectory`, `homeDirectory`, `desktopLocalPort`, `desktopWindowState`, `desktopHosts`, `securityScopedBookmarks`, `permissionAutoAccept`
+- `settings.json` keys: `projects`, `activeProjectId`, `lastDirectory`, `homeDirectory`, `desktopLocalPort`, `desktopWindowState`, `desktopHosts`, `securityScopedBookmarks`, `permissionAutoAccept`, `ghCliActive`, `sttLocalModel`
 
 Provider auth is per machine on purpose: run `opencode auth login` (or import) after `apply`.
 

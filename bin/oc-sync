@@ -79,6 +79,8 @@ SETTINGS_DROP = {
     "projects",                 # absolute paths
     "activeProjectId",
     "desktopInstallId",         # per-install id
+    "ghCliActive",              # whether gh is installed on this machine
+    "sttLocalModel",            # whisper model installed locally
 }
 
 # Files captured verbatim (no templating needed).
