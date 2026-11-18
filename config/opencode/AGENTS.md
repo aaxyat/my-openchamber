@@ -1,6 +1,6 @@
 # Global agent rules
 
-Every session, repo, host, OS. Reversible work proceeds; irreversible work passes the Gate (§2).
+Every session, repo, host, OS. Reversible work proceeds; irreversible work passes the Gate (§2). Durable artifacts live in `~/Documents/Agents` (§7).
 
 ## 0. Hard rules
 
@@ -10,7 +10,7 @@ Every session, repo, host, OS. Reversible work proceeds; irreversible work passe
 4. **Never weaken security to finish a task:** no `StrictHostKeyChecking=no`, `chmod 777`, `PasswordAuthentication yes`, or `NOPASSWD` beyond a named need.
 5. **Never commit, push, tag, or delete branches unless asked.** Never `--no-verify`, force-push shared branches, or rewrite published history.
 6. **Never claim unverified work.** Run the changed path, report what executed, mark inference `[INFERENCE]`. Missing helper → say so.
-7. **Durable artifacts live in `~/Agents`.** Delete via `bin/rm` (soft delete); purging `.trash` is gated.
+7. **Durable artifacts live in `~/Documents/Agents`.** Delete via `bin/rm` (soft delete); purging `.trash` is gated.
 8. **Delegation inherits nothing:** paste §0 into every subagent prompt and require it to read §2 first.
 
 ## 1. Defaults
@@ -25,7 +25,7 @@ Every session, repo, host, OS. Reversible work proceeds; irreversible work passe
 - Verify by running the changed path. Static checks prove syntax, not intent; never claim complete without runnable proof.
 - Ask once, batched, only for decisions that are the user's and §2 doesn't answer. Never ask what a tool can answer.
 - A quick clarification goes through the `question` tool; a choice that sets the direction of work (scope, approach, trade-off) goes through `openchamber_render` with `awaitAnswer`, so the user can add conditions.
-- Before any §2 work, run `~/Agents/bin/preflight` and report FAIL lines. If the helper is missing, say so and do the step by hand.
+- Before any §2 work, run `~/Documents/Agents/bin/preflight` and report FAIL lines. If the helper is missing, say so and do the step by hand.
 
 ## 2. The Gate
 
@@ -39,9 +39,9 @@ OpenChamber's permission mode (`safety`, `auto`) is not the Gate. Run the Gate f
 - **Publish/spend:** publish, release, send mail/messages, billable resources (state cost ceiling first), cancel
 - **Shared state:** remote branch, shared DB, prod config, any tailnet peer's files
 
-**Exempt:** `~/Agents/tmp` and your own subpaths of the OS temp dir; files created this session whose sha256 still matches what you last wrote; edits to a tracked file only if `git status --porcelain -- <path>` is empty and the path is tracked, not ignored, not in a submodule, not via symlink, not under `.git/`; regenerable logs/state. A snapshot is pass-2 proof, never an exemption.
+**Exempt:** `~/Documents/Agents/tmp` and your own subpaths of the OS temp dir; files created this session whose sha256 still matches what you last wrote; edits to a tracked file only if `git status --porcelain -- <path>` is empty and the path is tracked, not ignored, not in a submodule, not via symlink, not under `.git/`; regenerable logs/state. A snapshot is pass-2 proof, never an exemption.
 
-1. **ENUMERATE**: resolve targets without following symlinks; write a NUL-delimited manifest + count to `~/Agents/tmp/<task>.manifest` (`bin/manifest` does it, with sha256s). State blast radius and whether loss is permanent. Record sha256 of any overwrite target.
+1. **ENUMERATE**: resolve targets without following symlinks; write a NUL-delimited manifest + count to `~/Documents/Agents/tmp/<task>.manifest` (`bin/manifest` does it, with sha256s). State blast radius and whether loss is permanent. Record sha256 of any overwrite target.
 2. **REVERSE**: name the rollback and prove it restores: checksum/size-match the backup, `git show` the ref, `visudo -c -f` / `sshd -t -f` on the backup, list the snapshot.
 3. **AUTHORIZE**: quote the user's words, then apply §0.2: (a) rollback failed verification → stop; (b) no rollback → IRREVERSIBLE, proceed only if words name the exact target/amount, else ask once; (c) proven + literal → proceed; (d) proven + inferred → ask once with command, blast radius, rollback.
 4. **EXECUTE FROM THE MANIFEST**: never re-expand a glob. Immediately before acting, re-check count, existence, type (symlink swap aborts), and re-hash overwrite targets. Any mismatch → abort, re-enumerate, re-authorize.
@@ -49,7 +49,7 @@ OpenChamber's permission mode (`safety`, `auto`) is not the Gate. Run the Gate f
 
 Steps 1–3 are written out before execution.
 
-**Deletion:** `~/Agents/bin/rm` (first on PATH for agent shells) soft-deletes outside scratch into `~/Agents/data/.trash/<date>/`, logs original path, manifest hash, count, and quote; `bin/undo-rm <id>` reverses. Bypassed by `/bin/rm`, `command rm`, `find -delete`, `xargs rm`, `git clean`, language-level deletes; those stay gated by the list above.
+**Deletion:** `~/Documents/Agents/bin/rm` (first on PATH for agent shells) soft-deletes outside scratch into `~/Documents/Agents/data/.trash/<date>/`, logs original path, manifest hash, count, and quote; `bin/undo-rm <id>` reverses. Bypassed by `/bin/rm`, `command rm`, `find -delete`, `xargs rm`, `git clean`, language-level deletes; those stay gated by the list above.
 
 ## 3. Secrets
 
@@ -69,7 +69,7 @@ Steps 1–3 are written out before execution.
 ## 5. Git
 
 - "Verify" never means "commit".
-- Before destructive git, run `~/Agents/bin/git-snapshot <name>` (tracked + untracked, pinned as `refs/backup/<name>-<date>`).
+- Before destructive git, run `~/Documents/Agents/bin/git-snapshot <name>` (tracked + untracked, pinned as `refs/backup/<name>-<date>`).
 - Read `git status`/`git diff` before staging; commit only what the task touched.
 - Global hooks must chain to the repo's own `hooks/<name>`; the secret scan warns visibly if `gitleaks` is missing.
 
@@ -79,9 +79,9 @@ Steps 1–3 are written out before execution.
 - Use `subagent` for a delegated part of the current task. Use `openchamber_workflow` only when the user asks for a workflow or approves one; every agent runs on the model the workflow names.
 - Prompt contents: §0.8.
 
-## 7. Workspace: `~/Agents`
+## 7. Workspace: `~/Documents/Agents`
 
-Anything that must outlive the session lives here (`%USERPROFILE%\Agents` on Windows; scripts use `$HOME`, not a literal `~`), never loose in `~`, the temp dir, or a repo. Rationale and provisioning: `~/Agents/README.md`.
+Anything that must outlive the session lives here (`%USERPROFILE%\Agents` on Windows; scripts use `$HOME`, not a literal `~`), never loose in `~`, the temp dir, or a repo. Rationale and provisioning: `~/Documents/Agents/README.md`.
 
 | Path | Holds | Gate |
 |---|---|---|
@@ -96,7 +96,7 @@ Anything that must outlive the session lives here (`%USERPROFILE%\Agents` on Win
 - Owner-only permissions throughout, `umask 077`. A human-owned scheduled job prunes tmp >7d, logs and `.trash` >30d; agents never purge.
 - Shared artifacts: take `state/locks/<name>.lock` with exclusive create, re-check mtime/hash, write, release. Locks older than a day may be broken after saying so.
 - Lock with an immutable flag (`chflags uchg` macOS/BSD, `chattr +i` Linux): `bin` (dir and files), `AGENTS.md`, and the retention job definition. Unlocking is §2 Access.
-- Layout: `~/Agents/<area>/<project>/<file>`. Scripts: absolute paths, executable, shebang. No secrets here. No second workspace; if `~/Agents` is missing, say so and ask the user for the provisioning block; do not create a second workspace.
+- Layout: `~/Documents/Agents/<area>/<project>/<file>`. Scripts: absolute paths, executable, shebang. No secrets here. No second workspace; if `~/Documents/Agents` is missing, say so and ask the user for the provisioning block; do not create a second workspace.
 
 ## 8. Honesty
 

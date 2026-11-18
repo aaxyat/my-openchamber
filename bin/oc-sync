@@ -29,6 +29,7 @@ OPENCHAMBER_DIR = Path(os.environ.get("OPENCHAMBER_CONFIG_DIR") or HOME / ".conf
 OPENCODE_DIR = Path(os.environ.get("OPENCODE_CONFIG_DIR") or HOME / ".config/opencode")
 CORTEXKIT_DIR = Path(os.environ.get("CORTEXKIT_CONFIG_DIR") or HOME / ".config/cortexkit")
 SKILLS_LINK_DIR = Path(os.environ.get("SKILLS_LINK_DIR") or HOME / ".agents/skills")
+AGENTS_WORKSPACE = Path(os.environ.get("AGENTS_WORKSPACE") or HOME / "Documents/Agents")
 
 
 def _agent_tools() -> Path:
@@ -89,6 +90,7 @@ PLAIN_FILES = [
     (OPENCHAMBER_DIR / "plugin-switches.json", "config/openchamber/plugin-switches.json"),
     (CORTEXKIT_DIR / "magic-context.jsonc", "config/cortexkit/magic-context.jsonc"),
     (OPENCODE_DIR / "AGENTS.md", "config/opencode/AGENTS.md"),
+    (AGENTS_WORKSPACE / "README.md", "config/agents/README.md"),
 ]
 
 # Files captured with ${HOME} / ${AGENT_TOOLS} placeholders.
@@ -105,6 +107,7 @@ MEMORY_SRC = OPENCHAMBER_DIR / "memory.json"
 MEMORY_DST = "config/openchamber/memory.json"
 SKILLS_MANIFEST = "manifests/skills.json"
 EXTENSIONS_MANIFEST = "manifests/extensions.json"
+WORKSPACE_DIRS = ("bin", "data", "logs", "state", "tmp")
 
 # Files that must exist on the machine for a synced config to actually work.
 # Each entry: (path, what breaks without it).
@@ -662,6 +665,23 @@ def apply_settings(dry_run: bool) -> str:
     return f"write  {rel(SETTINGS_SRC)}" + (f" (backup {saved.name})" if saved else "")
 
 
+def provision_workspace(dry_run: bool) -> str:
+    """Create the durable agent workspace with owner-only directories."""
+    names = ", ".join(WORKSPACE_DIRS)
+    if dry_run:
+        return f"ensure {rel(AGENTS_WORKSPACE)} ({names})"
+    AGENTS_WORKSPACE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    AGENTS_WORKSPACE.chmod(0o700)
+    for name in WORKSPACE_DIRS:
+        path = AGENTS_WORKSPACE / name
+        path.mkdir(mode=0o700, exist_ok=True)
+        path.chmod(0o700)
+    readme = AGENTS_WORKSPACE / "README.md"
+    if readme.exists():
+        readme.chmod(0o600)
+    return f"ensure {rel(AGENTS_WORKSPACE)} ({names})"
+
+
 def cmd_apply(args: argparse.Namespace) -> int:
     if not REPO.joinpath("config").is_dir():
         die("repo has no config/ — run `oc-sync capture` on the source machine first")
@@ -681,6 +701,7 @@ def cmd_apply(args: argparse.Namespace) -> int:
         lines.append(apply_file(REPO / dst, src, args.dry_run))
     for src, dst in TEMPLATED_FILES:
         lines.append(apply_file(REPO / dst, src, args.dry_run))
+    lines.append(provision_workspace(args.dry_run))
     if (REPO / MEMORY_DST).exists():
         lines.append(apply_file(REPO / MEMORY_DST, MEMORY_SRC, args.dry_run))
 
@@ -726,6 +747,15 @@ def cmd_status(_args: argparse.Namespace) -> int:
             rel(src),
             expected_text=lambda s=src, d=dst: merge_opencode(render((REPO / d).read_text()), s),
         )
+
+    missing_dirs = [name for name in WORKSPACE_DIRS if not (AGENTS_WORKSPACE / name).is_dir()]
+    if not AGENTS_WORKSPACE.is_dir():
+        workspace_state = "missing"
+    elif missing_dirs:
+        workspace_state = f"missing {', '.join(missing_dirs)}"
+    else:
+        workspace_state = "provisioned"
+    rows.append(("agents workspace", workspace_state))
 
     manifest_path = REPO / SKILLS_MANIFEST
     if manifest_path.exists():

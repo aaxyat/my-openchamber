@@ -12,6 +12,7 @@ Portable copy of my OpenChamber + OpenCode setup — UI settings, MCP servers, s
 | `config/opencode/opencode.json` | `~/.config/opencode/opencode.json` | MCP servers, plugins, compaction, websearch |
 | `config/cortexkit/magic-context.jsonc` | `~/.config/cortexkit/magic-context.jsonc` | Magic Context historian/dreamer models |
 | `config/opencode/AGENTS.md` | `~/.config/opencode/AGENTS.md` | global agent instructions |
+| `config/agents/README.md` | `~/Documents/Agents/README.md` | agent workspace README |
 | `manifests/skills.json` | `~/.agents/skills` | 179 skills pinned to 4 packs by commit (44 upstream, 135 OMP) |
 | `manifests/extensions.json` | `~/.config/openchamber/extensions.json` | extension repos pinned by commit, plus capability grants |
 
@@ -90,6 +91,7 @@ git -C ~/.local/share/agent-tools/skill-packs/omp checkout FETCH_HEAD
 | `SKILLS_LINK_DIR` | `~/.agents/skills` | where skill symlinks are created |
 | `SKILL_PACKS_DIR` | `${AGENT_TOOLS}/skill-packs` | where skill packs are cloned |
 | `AGENT_TOOLS` | `/opt/agents/tools` if present, else `~/.local/share/agent-tools` | MCP dependency root |
+| `AGENTS_WORKSPACE` | `~/Documents/Agents` | durable agent workspace; `apply` creates its five directories |
 | `NODE` | auto-detected | node binary for the local MCP servers |
 
 ## Notes
@@ -98,4 +100,5 @@ git -C ~/.local/share/agent-tools/skill-packs/omp checkout FETCH_HEAD
 - Extensions are cloned at pinned commits. If one needs a build step, run `bun install && bun run build` in its directory afterwards. Token Meter 1.9.0 and Resource Monitor 1.6.0 ship their built files, so neither needs it; both extensions' `service` grants are recorded in the manifest, so they start without a permission prompt.
 - Reopen an extension panel after an update: OpenChamber does not reload an open panel's iframe when the extension underneath changes.
 - `~/.config/opencode/AGENTS.md` is captured here as a regular file. If a machine has it symlinked elsewhere, `apply` replaces the link with the repo's content instead of writing through it.
+- The durable agent workspace is `~/Documents/Agents`; `apply` creates its `bin`, `data`, `logs`, `state`, `tmp` directories (mode `700`) and writes its README.
 - `apply --memory` is not a flag; capture memory with `./bin/oc-sync capture --memory` when you want agent memory to travel too.
