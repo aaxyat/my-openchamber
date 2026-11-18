@@ -98,5 +98,8 @@
   "monoFont": "jetbrains-mono",
   "timeFormatPreference": "12h",
   "walkthroughModelVariant": "low",
-  "sessionWorkEnabled": false
+  "sessionWorkEnabled": false,
+  "showReasoningTraces": true,
+  "expandReasoningWhileStreaming": true,
+  "showTurnChangedFiles": true
 }

@@ -177,6 +177,18 @@
       "updatedAt": 1794967360721,
       "value": false
     },
+    "showReasoningTraces": {
+      "updatedAt": 1794976626487,
+      "value": true
+    },
+    "expandReasoningWhileStreaming": {
+      "updatedAt": 1794976630337,
+      "value": true
+    },
+    "showTurnChangedFiles": {
+      "updatedAt": 1794976636041,
+      "value": true
+    },
     "themeId": {
       "updatedAt": 0,
       "surfaces": {
