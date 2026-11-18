@@ -6,10 +6,28 @@
     "fgDark": "#ebe7dc"
   },
   "desktopDefaultHostId": "local",
-  "permissionDefaultMode": "auto",
+  "permissionDefaultMode": "safety",
+  "desktopKeepAwakeEnabled": true,
+  "agentImageToolEnabled": false,
+  "agentNotifyToolEnabled": true,
+  "agentMemoryToolEnabled": true,
+  "agentMemoryDreamingEnabled": true,
+  "agentMemoryDreamingModel": "9router/ag/gemini-3.8-flash",
+  "agentMemoryDreamingVariant": "",
+  "agentUsageToolEnabled": true,
+  "privateRelay": {
+    "enabled": false,
+    "relayUrl": "wss://relay.openchamber.dev/ws"
+  },
+  "agentWorkflowToolEnabled": true,
+  "opencodeBinary": "",
+  "terminalShell": "zsh",
+  "terminalLoginShells": [
+    "zsh"
+  ],
   "lightThemeId": "openchamber-light",
   "darkThemeId": "openchamber-dark",
-  "notifyOnSubtasks": true,
+  "notifyOnSubtasks": false,
   "notifyOnCompletion": true,
   "notifyOnPullRequests": true,
   "notifyOnError": true,
@@ -35,12 +53,16 @@
   "favoriteModels": [],
   "recentModels": [
     {
-      "providerID": "mistral",
-      "modelID": "deepseek-v4-1-flash-1017"
+      "providerID": "9router",
+      "modelID": "ag/gemini-3.8-flash"
     },
     {
       "providerID": "9router",
-      "modelID": "ag/gemini-3.8-flash"
+      "modelID": "oc/big-pickle"
+    },
+    {
+      "providerID": "mistral",
+      "modelID": "deepseek-v4-1-flash-1017"
     }
   ],
   "hiddenModels": [],
@@ -64,23 +86,17 @@
     "9router/ag/gemini-3.8-flash": "high"
   },
   "sttCorrectTranscript": true,
-  "walkthroughModelOverride": "mistral/ministral-14b-2512",
+  "walkthroughModelOverride": "9router/ag/gemini-3.8-flash",
   "nativeNotificationsEnabled": true,
   "defaultModel": "mistral/deepseek-v4-1-flash-1017",
   "defaultVariant": "max",
   "defaultAgent": "build",
-  "desktopKeepAwakeEnabled": true,
-  "agentImageToolEnabled": false,
-  "agentNotifyToolEnabled": true,
-  "agentMemoryToolEnabled": true,
-  "agentMemoryDreamingEnabled": true,
-  "agentMemoryDreamingModel": "",
-  "agentMemoryDreamingVariant": "",
-  "agentUsageToolEnabled": true,
-  "privateRelay": {
-    "enabled": false,
-    "relayUrl": "wss://relay.openchamber.dev/ws"
-  },
   "sessionTabsEnabled": true,
-  "followUpBehavior": "steer"
+  "followUpBehavior": "steer",
+  "reportUsage": false,
+  "themeVariant": "dark",
+  "monoFont": "jetbrains-mono",
+  "timeFormatPreference": "12h",
+  "walkthroughModelVariant": "low",
+  "sessionWorkEnabled": false
 }

@@ -7,11 +7,17 @@
     },
     "darkThemeId": {
       "updatedAt": 1794590677911,
-      "value": "openchamber-dark"
+      "value": "openchamber-dark",
+      "surfaces": {
+        "desktop": {
+          "value": "openchamber-dark",
+          "updatedAt": 1794967256055
+        }
+      }
     },
     "notifyOnSubtasks": {
-      "updatedAt": 1794590677911,
-      "value": true
+      "updatedAt": 1794967298116,
+      "value": false
     },
     "notifyOnCompletion": {
       "updatedAt": 1794590677911,
@@ -55,15 +61,19 @@
       "value": []
     },
     "recentModels": {
-      "updatedAt": 1794796039059,
+      "updatedAt": 1794967331248,
       "value": [
-        {
-          "providerID": "mistral",
-          "modelID": "deepseek-v4-1-flash-1017"
-        },
         {
           "providerID": "9router",
           "modelID": "ag/gemini-3.8-flash"
+        },
+        {
+          "providerID": "9router",
+          "modelID": "oc/big-pickle"
+        },
+        {
+          "providerID": "mistral",
+          "modelID": "deepseek-v4-1-flash-1017"
         }
       ]
     },
@@ -87,6 +97,10 @@
       "updatedAt": 1794590769472,
       "value": []
     },
+    "lastSelectedModel": {
+      "updatedAt": 1794590769472,
+      "value": "mistral/deepseek-v4-1-flash-1017"
+    },
     "recentEfforts": {
       "updatedAt": 1794796039059,
       "value": {
@@ -107,9 +121,29 @@
         "9router/ag/gemini-3.8-flash": "high"
       }
     },
-    "lastSelectedModel": {
-      "updatedAt": 1794590769472,
+    "sttCorrectTranscript": {
+      "updatedAt": 1794967152293,
+      "value": true
+    },
+    "walkthroughModelOverride": {
+      "updatedAt": 1794967331248,
+      "value": "9router/ag/gemini-3.8-flash"
+    },
+    "nativeNotificationsEnabled": {
+      "updatedAt": 1794967152293,
+      "value": true
+    },
+    "defaultModel": {
+      "updatedAt": 1794592452677,
       "value": "mistral/deepseek-v4-1-flash-1017"
+    },
+    "defaultVariant": {
+      "updatedAt": 1794592458900,
+      "value": "max"
+    },
+    "defaultAgent": {
+      "updatedAt": 1794592457004,
+      "value": "build"
     },
     "sessionTabsEnabled": {
       "updatedAt": 1794592391084,
@@ -119,17 +153,47 @@
       "updatedAt": 1794592429077,
       "value": "steer"
     },
-    "defaultModel": {
-      "updatedAt": 1794592452677,
-      "value": "mistral/deepseek-v4-1-flash-1017"
+    "reportUsage": {
+      "updatedAt": 1794967214626,
+      "value": false
     },
-    "defaultAgent": {
-      "updatedAt": 1794592457004,
-      "value": "build"
+    "themeVariant": {
+      "updatedAt": 1794967248824,
+      "value": "dark"
     },
-    "defaultVariant": {
-      "updatedAt": 1794592458900,
-      "value": "max"
+    "monoFont": {
+      "updatedAt": 1794967271126,
+      "value": "jetbrains-mono"
+    },
+    "timeFormatPreference": {
+      "updatedAt": 1794967276826,
+      "value": "12h"
+    },
+    "walkthroughModelVariant": {
+      "updatedAt": 1794967335855,
+      "value": "low"
+    },
+    "sessionWorkEnabled": {
+      "updatedAt": 1794967360721,
+      "value": false
+    },
+    "themeId": {
+      "updatedAt": 0,
+      "surfaces": {
+        "desktop": {
+          "value": "openchamber-dark",
+          "updatedAt": 1794967256055
+        }
+      }
+    },
+    "useSystemTheme": {
+      "updatedAt": 0,
+      "surfaces": {
+        "desktop": {
+          "value": true,
+          "updatedAt": 1794967248824
+        }
+      }
     }
   }
 }
