@@ -34,6 +34,20 @@
           "sockets": []
         }
       }
+    },
+    "image-guard": {
+      "repo": "https://github.com/aaxyat/openchamber-image-guard",
+      "commit": "171a29d753ee940b1aa9443d8d1c4dc57bb8d59d",
+      "storageId": "1df69296-6a82-440b-ab54-af0a67c9b627",
+      "grants": [
+        "filesystem",
+        "opencodePlugin"
+      ],
+      "scopes": {
+        "filesystem": [
+          "~/.config/opencode/image-guard.json"
+        ]
+      }
     }
   }
 }
