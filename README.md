@@ -11,6 +11,7 @@ Portable copy of my OpenChamber + OpenCode setup — UI settings, MCP servers, s
 | `config/openchamber/plugin-switches.json` | `~/.config/openchamber/plugin-switches.json` | enabled/disabled plugins |
 | `config/opencode/opencode.json` | `~/.config/opencode/opencode.json` | MCP servers, plugins, compaction, websearch |
 | `config/cortexkit/magic-context.jsonc` | `~/.config/cortexkit/magic-context.jsonc` | Magic Context historian/dreamer models |
+| `config/opencode/AGENTS.md` | `~/.config/opencode/AGENTS.md` | global agent instructions |
 | `manifests/skills.json` | `~/.agents/skills` | 179 skills pinned to 4 packs by commit (44 upstream, 135 OMP) |
 | `manifests/extensions.json` | `~/.config/openchamber/extensions.json` | extension repos pinned by commit, plus capability grants |
 
@@ -96,5 +97,5 @@ git -C ~/.local/share/agent-tools/skill-packs/omp checkout FETCH_HEAD
 - Quit OpenChamber before `apply` — a running instance rewrites `settings.json` on exit.
 - Extensions are cloned at pinned commits. If one needs a build step, run `bun install && bun run build` in its directory afterwards. Token Meter 1.9.0 and Resource Monitor 1.6.0 ship their built files, so neither needs it; both extensions' `service` grants are recorded in the manifest, so they start without a permission prompt.
 - Reopen an extension panel after an update: OpenChamber does not reload an open panel's iframe when the extension underneath changes.
-- `~/.config/opencode/AGENTS.md` and `~/.agents/{AGENTS,RULES}.md` are symlinks into the `my-dsh` repo, not this one.
+- `~/.config/opencode/AGENTS.md` is captured here as a regular file. If a machine has it symlinked elsewhere, `apply` replaces the link with the repo's content instead of writing through it.
 - `apply --memory` is not a flag; capture memory with `./bin/oc-sync capture --memory` when you want agent memory to travel too.

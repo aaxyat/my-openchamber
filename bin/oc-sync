@@ -88,6 +88,7 @@ PLAIN_FILES = [
     (OPENCHAMBER_DIR / "preferences.json", "config/openchamber/preferences.json"),
     (OPENCHAMBER_DIR / "plugin-switches.json", "config/openchamber/plugin-switches.json"),
     (CORTEXKIT_DIR / "magic-context.jsonc", "config/cortexkit/magic-context.jsonc"),
+    (OPENCODE_DIR / "AGENTS.md", "config/opencode/AGENTS.md"),
 ]
 
 # Files captured with ${HOME} / ${AGENT_TOOLS} placeholders.
@@ -462,6 +463,15 @@ def apply_file(src: Path, dst: Path, dry_run: bool) -> str:
     new = render(src.read_text())
     if dst.name == "opencode.json":
         new = merge_opencode(new, dst)
+    if dst.is_symlink():
+        # Never write through a link into another repo; the synced file owns this path.
+        if dry_run:
+            return f"write  {rel(dst)} (replace symlink)"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        saved = backup(dst)
+        dst.unlink()
+        dst.write_text(new)
+        return f"write  {rel(dst)} (replaced symlink)" + (f" (backup {saved.name})" if saved else "")
     if dst.exists() and dst.read_text() == new:
         return f"same   {rel(dst)}"
     if dst.exists() and same_json(dst.read_text(), new):
