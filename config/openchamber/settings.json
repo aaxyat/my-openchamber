@@ -6,19 +6,7 @@
     "fgDark": "#ebe7dc"
   },
   "desktopDefaultHostId": "local",
-  "desktopKeepAwakeEnabled": true,
-  "agentImageToolEnabled": false,
-  "agentNotifyToolEnabled": true,
-  "agentMemoryToolEnabled": true,
-  "agentMemoryDreamingEnabled": true,
-  "agentMemoryDreamingModel": "",
-  "agentMemoryDreamingVariant": "",
-  "agentUsageToolEnabled": true,
   "permissionDefaultMode": "auto",
-  "privateRelay": {
-    "enabled": false,
-    "relayUrl": "wss://relay.openchamber.dev/ws"
-  },
   "lightThemeId": "openchamber-light",
   "darkThemeId": "openchamber-dark",
   "notifyOnSubtasks": true,
@@ -60,6 +48,7 @@
   "customProviderIcons": {},
   "recentAgents": [],
   "favoriteAgents": [],
+  "lastSelectedModel": "mistral/deepseek-v4-1-flash-1017",
   "recentEfforts": {
     "mistral/deepseek-v4-1-flash-1017": [
       "none",
@@ -74,10 +63,24 @@
     "mistral/deepseek-v4-1-flash-1017": "max",
     "9router/ag/gemini-3.8-flash": "high"
   },
-  "lastSelectedModel": "mistral/deepseek-v4-1-flash-1017",
-  "sessionTabsEnabled": true,
-  "followUpBehavior": "steer",
+  "sttCorrectTranscript": true,
+  "walkthroughModelOverride": "mistral/ministral-14b-2512",
+  "nativeNotificationsEnabled": true,
   "defaultModel": "mistral/deepseek-v4-1-flash-1017",
+  "defaultVariant": "max",
   "defaultAgent": "build",
-  "defaultVariant": "max"
+  "desktopKeepAwakeEnabled": true,
+  "agentImageToolEnabled": false,
+  "agentNotifyToolEnabled": true,
+  "agentMemoryToolEnabled": true,
+  "agentMemoryDreamingEnabled": true,
+  "agentMemoryDreamingModel": "",
+  "agentMemoryDreamingVariant": "",
+  "agentUsageToolEnabled": true,
+  "privateRelay": {
+    "enabled": false,
+    "relayUrl": "wss://relay.openchamber.dev/ws"
+  },
+  "sessionTabsEnabled": true,
+  "followUpBehavior": "steer"
 }
