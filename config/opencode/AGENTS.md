@@ -60,8 +60,8 @@ Steps 1–3 are written out before execution.
 
 ## 4. Remote hosts
 
-- Tailnet peers count as remote hosts. SSH keys come from the agent, none on disk; don't set `IdentitiesOnly yes` with agent-only keys. Hosts: `mediaserver` (public VPS), `newton` (Ubuntu homelab; unattended sudo fallback is keystore item `newton-sudo`).
-- `ControlPersist` ≤3m, off for `mediaserver`. Verification must bypass it: `-o ControlMaster=no -o ControlPath=none -o BatchMode=yes` (`bin/ssh-verify`).
+- Tailnet peers count as remote hosts. SSH keys come from the agent, none on disk; don't set `IdentitiesOnly yes` with agent-only keys. Hosts: `<vps>` (public VPS), `<homelab>` (Ubuntu homelab; unattended sudo fallback is a keystore item).
+- `ControlPersist` ≤3m, off for `<vps>`. Verification must bypass it: `-o ControlMaster=no -o ControlPath=none -o BatchMode=yes` (`bin/ssh-verify`).
 - Probe before changing (`bin/ssh-probe`); prove exposure from outside (the VPS is a vantage point).
 - Changes to sshd, sudoers, firewall, or `authorized_keys` need: stated lockout scenario; armed auto-revert (`systemd-run --on-active=5m --unit=revert-<change>-<date> <restore+reload>`, proven with `systemctl list-timers`; transient timers die on reboot; firewall needs its own ruleset restore; on Ubuntu check `ssh.socket` too); validation (`sshd -t`, `visudo -c`) before reload; verification via a brand-new connection before closing the old one; then disarm. Never leave a host half-configured.
 - `bin/sshd-apply` stays untested until it passes three container cases (good, broken → revert fires, valid-but-lockout → revert fires). Until then, do it by hand.
