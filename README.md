@@ -11,10 +11,10 @@ Portable copy of my OpenChamber + OpenCode setup — UI settings, MCP servers, s
 | `config/openchamber/plugin-switches.json` | `~/.config/openchamber/plugin-switches.json` | enabled/disabled plugins |
 | `config/opencode/opencode.json` | `~/.config/opencode/opencode.json` | MCP servers, plugins, compaction, websearch |
 | `config/cortexkit/magic-context.jsonc` | `~/.config/cortexkit/magic-context.jsonc` | Magic Context historian/dreamer models |
-| `manifests/skills.json` | `~/.agents/skills` | 43 skills pinned to 3 upstream packs by commit |
+| `manifests/skills.json` | `~/.agents/skills` | 179 skills pinned to 4 packs by commit (44 upstream, 135 OMP) |
 | `manifests/extensions.json` | `~/.config/openchamber/extensions.json` | extension repos pinned by commit, plus capability grants |
 
-Skills and extensions are **pinned, not vendored**: the repo stores repo URL + commit, and `apply` clones exactly that. Small repo, reproducible result.
+Skills and extensions are **pinned, not vendored**: the repo stores repo URL + commit, and `apply` clones exactly that. Small repo, reproducible result. The skill packs are `anthropics/skills`, `cursor/plugins`, `mattpocock/skills`, and `aaxyat/aaxyat-OMP-Config`; the last one carries the skills installed through OMP.
 
 ## What never travels
 
@@ -55,6 +55,18 @@ git push
 ```
 
 `./bin/oc-sync status` shows drift between the repo and the current machine (files, skill links, pack commits) without writing anything.
+
+### Updating a skill pin
+
+The pack clones under `${SKILL_PACKS_DIR}` are what `capture` reads. To take a newer revision of a pack — for example after the OMP repo syncs new skills — advance its clone, then capture:
+
+```bash
+git -C ~/.local/share/agent-tools/skill-packs/omp fetch origin main
+git -C ~/.local/share/agent-tools/skill-packs/omp checkout FETCH_HEAD
+./bin/oc-sync capture
+```
+
+`capture` writes the new HEAD into `manifests/skills.json`; commit that with the rest. Other machines get it on their next `apply`, which checks out exactly the pinned commit.
 
 ## Prerequisites on a target machine
 

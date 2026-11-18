@@ -1,5 +1,9 @@
 {
   "packs": {
+    "omp": {
+      "repo": "https://github.com/aaxyat/aaxyat-OMP-Config.git",
+      "commit": "66b5cd6759174abbd47f98ccec7e09180ca3aec0"
+    },
     "anthropic": {
       "repo": "https://github.com/anthropics/skills.git",
       "commit": "2c5958ecac7cee2b583967a2c4981d0f4a75c579"
@@ -14,13 +18,133 @@
     }
   },
   "links": {
+    "VibeSec-Skill": {
+      "pack": "omp",
+      "path": "skills/installed/VibeSec-Skill"
+    },
+    "academy-guide": {
+      "pack": "omp",
+      "path": "skills/installed/academy-guide"
+    },
+    "algorithmic-art": {
+      "pack": "omp",
+      "path": "skills/installed/algorithmic-art"
+    },
+    "architect": {
+      "pack": "omp",
+      "path": "skills/pstack/architect"
+    },
+    "arena": {
+      "pack": "omp",
+      "path": "skills/pstack/arena"
+    },
+    "ask-matt": {
+      "pack": "omp",
+      "path": "skills/installed/ask-matt"
+    },
+    "automate-me": {
+      "pack": "omp",
+      "path": "skills/pstack/automate-me"
+    },
+    "autoprompt": {
+      "pack": "omp",
+      "path": "skills/installed/autoprompt"
+    },
+    "avoid-ai-writing": {
+      "pack": "omp",
+      "path": "skills/installed/avoid-ai-writing"
+    },
+    "benchmark-checklist": {
+      "pack": "omp",
+      "path": "skills/pstack/benchmark-checklist"
+    },
+    "blast-radius": {
+      "pack": "omp",
+      "path": "skills/pstack/blast-radius"
+    },
+    "brainstorming": {
+      "pack": "omp",
+      "path": "skills/installed/brainstorming"
+    },
+    "brand-guidelines": {
+      "pack": "omp",
+      "path": "skills/installed/brand-guidelines"
+    },
+    "bro": {
+      "pack": "omp",
+      "path": "skills/pstack/bro"
+    },
     "canvas-design": {
       "pack": "anthropic",
       "path": "skills/canvas-design"
     },
+    "cavecrew": {
+      "pack": "omp",
+      "path": "skills/installed/cavecrew"
+    },
+    "caveman": {
+      "pack": "omp",
+      "path": "skills/installed/caveman"
+    },
+    "caveman-commit": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-commit"
+    },
+    "caveman-compress": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-compress"
+    },
+    "caveman-discover": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-discover"
+    },
+    "caveman-evidence-review": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-evidence-review"
+    },
+    "caveman-explore": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-explore"
+    },
+    "caveman-help": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-help"
+    },
+    "caveman-learn": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-learn"
+    },
+    "caveman-manage": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-manage"
+    },
+    "caveman-optimize": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-optimize"
+    },
+    "caveman-review": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-review"
+    },
+    "caveman-setup": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-setup"
+    },
+    "caveman-stats": {
+      "pack": "omp",
+      "path": "skills/installed/caveman-stats"
+    },
     "check-compiler-errors": {
       "pack": "cursor",
       "path": "cursor-team-kit/skills/check-compiler-errors"
+    },
+    "chief-of-staff": {
+      "pack": "omp",
+      "path": "skills/mattpocock/chief-of-staff"
+    },
+    "claude-handoff": {
+      "pack": "omp",
+      "path": "skills/installed/claude-handoff"
     },
     "cli-for-agents": {
       "pack": "cursor",
@@ -34,6 +158,22 @@
       "pack": "mattpocock",
       "path": "skills/engineering/codebase-design"
     },
+    "context7-mcp": {
+      "pack": "omp",
+      "path": "skills/installed/context7-mcp"
+    },
+    "correct": {
+      "pack": "omp",
+      "path": "skills/pstack/correct"
+    },
+    "create-formal-verification-skill": {
+      "pack": "omp",
+      "path": "skills/pstack/create-formal-verification-skill"
+    },
+    "create-verification-skill": {
+      "pack": "omp",
+      "path": "skills/pstack/create-verification-skill"
+    },
     "deslop": {
       "pack": "cursor",
       "path": "cursor-team-kit/skills/deslop"
@@ -42,13 +182,49 @@
       "pack": "mattpocock",
       "path": "skills/engineering/diagnosing-bugs"
     },
+    "discernment-nudge": {
+      "pack": "omp",
+      "path": "skills/installed/discernment-nudge"
+    },
+    "dispatching-parallel-agents": {
+      "pack": "omp",
+      "path": "skills/installed/dispatching-parallel-agents"
+    },
     "doc-coauthoring": {
       "pack": "anthropic",
       "path": "skills/doc-coauthoring"
     },
+    "docx": {
+      "pack": "omp",
+      "path": "skills/installed/docx"
+    },
     "domain-modeling": {
       "pack": "mattpocock",
       "path": "skills/engineering/domain-modeling"
+    },
+    "email-html-mjml": {
+      "pack": "omp",
+      "path": "skills/installed/email-html-mjml"
+    },
+    "executing-plans": {
+      "pack": "omp",
+      "path": "skills/installed/executing-plans"
+    },
+    "figure-it-out": {
+      "pack": "omp",
+      "path": "skills/pstack/figure-it-out"
+    },
+    "file-organizer": {
+      "pack": "omp",
+      "path": "skills/installed/file-organizer"
+    },
+    "find-skills": {
+      "pack": "omp",
+      "path": "skills/installed/find-skills"
+    },
+    "finishing-a-development-branch": {
+      "pack": "omp",
+      "path": "skills/installed/finishing-a-development-branch"
     },
     "fix-ci": {
       "pack": "cursor",
@@ -66,6 +242,18 @@
       "pack": "cursor",
       "path": "cursor-team-kit/skills/get-pr-comments"
     },
+    "git-guardrails-claude-code": {
+      "pack": "omp",
+      "path": "skills/installed/git-guardrails-claude-code"
+    },
+    "grill-me": {
+      "pack": "omp",
+      "path": "skills/installed/grill-me"
+    },
+    "grill-with-docs": {
+      "pack": "omp",
+      "path": "skills/installed/grill-with-docs"
+    },
     "grilling": {
       "pack": "mattpocock",
       "path": "skills/productivity/grilling"
@@ -74,17 +262,73 @@
       "pack": "mattpocock",
       "path": "skills/productivity/handoff"
     },
+    "how": {
+      "pack": "omp",
+      "path": "skills/pstack/how"
+    },
+    "html-report": {
+      "pack": "omp",
+      "path": "skills/installed/html-report"
+    },
     "implement": {
       "pack": "mattpocock",
       "path": "skills/engineering/implement"
+    },
+    "implement-spec": {
+      "pack": "omp",
+      "path": "skills/installed/implement-spec"
     },
     "improve-codebase-architecture": {
       "pack": "mattpocock",
       "path": "skills/engineering/improve-codebase-architecture"
     },
+    "in-your-own-words": {
+      "pack": "omp",
+      "path": "skills/pstack/in-your-own-words"
+    },
+    "internal-comms": {
+      "pack": "omp",
+      "path": "skills/installed/internal-comms"
+    },
+    "interrogate": {
+      "pack": "omp",
+      "path": "skills/pstack/interrogate"
+    },
+    "investigate-first": {
+      "pack": "omp",
+      "path": "skills/installed/investigate-first"
+    },
+    "ketchup": {
+      "pack": "omp",
+      "path": "skills/pstack/ketchup"
+    },
+    "ketchup-video": {
+      "pack": "omp",
+      "path": "skills/pstack/ketchup-video"
+    },
+    "lean-build": {
+      "pack": "omp",
+      "path": "skills/installed/lean-build"
+    },
+    "loop-me": {
+      "pack": "omp",
+      "path": "skills/installed/loop-me"
+    },
     "loop-on-ci": {
       "pack": "cursor",
       "path": "cursor-team-kit/skills/loop-on-ci"
+    },
+    "maintain-formal-verification-skill": {
+      "pack": "omp",
+      "path": "skills/pstack/maintain-formal-verification-skill"
+    },
+    "maintain-verification-skill": {
+      "pack": "omp",
+      "path": "skills/pstack/maintain-verification-skill"
+    },
+    "make-bot-ui": {
+      "pack": "omp",
+      "path": "skills/pstack/make-bot-ui"
     },
     "make-pr-easy-to-review": {
       "pack": "cursor",
@@ -94,25 +338,197 @@
       "pack": "anthropic",
       "path": "skills/mcp-builder"
     },
+    "migrate-to-shoehorn": {
+      "pack": "omp",
+      "path": "skills/installed/migrate-to-shoehorn"
+    },
+    "migration": {
+      "pack": "omp",
+      "path": "skills/installed/migration"
+    },
     "new-branch-and-pr": {
       "pack": "cursor",
       "path": "cursor-team-kit/skills/new-branch-and-pr"
+    },
+    "no-comments": {
+      "pack": "omp",
+      "path": "skills/pstack/no-comments"
+    },
+    "pdf": {
+      "pack": "omp",
+      "path": "skills/installed/pdf"
+    },
+    "ponytail": {
+      "pack": "omp",
+      "path": "skills/installed/ponytail"
+    },
+    "ponytail-audit": {
+      "pack": "omp",
+      "path": "skills/installed/ponytail-audit"
+    },
+    "ponytail-debt": {
+      "pack": "omp",
+      "path": "skills/installed/ponytail-debt"
+    },
+    "ponytail-gain": {
+      "pack": "omp",
+      "path": "skills/installed/ponytail-gain"
+    },
+    "ponytail-help": {
+      "pack": "omp",
+      "path": "skills/installed/ponytail-help"
+    },
+    "ponytail-review": {
+      "pack": "omp",
+      "path": "skills/installed/ponytail-review"
+    },
+    "poteto-help": {
+      "pack": "omp",
+      "path": "skills/pstack/poteto-help"
+    },
+    "poteto-mode": {
+      "pack": "omp",
+      "path": "skills/pstack/poteto-mode"
+    },
+    "pptx": {
+      "pack": "omp",
+      "path": "skills/installed/pptx"
     },
     "pr": {
       "pack": "mattpocock",
       "path": "skills/engineering/pr"
     },
+    "principle-attack-the-premise": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-attack-the-premise"
+    },
+    "principle-boundary-discipline": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-boundary-discipline"
+    },
+    "principle-build-the-lever": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-build-the-lever"
+    },
+    "principle-encode-lessons-in-structure": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-encode-lessons-in-structure"
+    },
+    "principle-exhaust-the-design-space": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-exhaust-the-design-space"
+    },
+    "principle-experience-first": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-experience-first"
+    },
+    "principle-explain-the-number": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-explain-the-number"
+    },
+    "principle-fix-root-causes": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-fix-root-causes"
+    },
+    "principle-foundational-thinking": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-foundational-thinking"
+    },
+    "principle-guard-the-context-window": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-guard-the-context-window"
+    },
+    "principle-laziness-protocol": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-laziness-protocol"
+    },
+    "principle-make-operations-idempotent": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-make-operations-idempotent"
+    },
+    "principle-migrate-callers-then-delete-legacy-apis": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-migrate-callers-then-delete-legacy-apis"
+    },
+    "principle-minimize-reader-load": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-minimize-reader-load"
+    },
+    "principle-model-the-domain": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-model-the-domain"
+    },
+    "principle-never-block-on-the-human": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-never-block-on-the-human"
+    },
+    "principle-outcome-oriented-execution": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-outcome-oriented-execution"
+    },
+    "principle-prove-it-works": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-prove-it-works"
+    },
+    "principle-redesign-from-first-principles": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-redesign-from-first-principles"
+    },
+    "principle-separate-before-serializing-shared-state": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-separate-before-serializing-shared-state"
+    },
+    "principle-sequence-verifiable-units": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-sequence-verifiable-units"
+    },
+    "principle-subtract-before-you-add": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-subtract-before-you-add"
+    },
+    "principle-test-behavior-not-implementation": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-test-behavior-not-implementation"
+    },
+    "principle-type-system-discipline": {
+      "pack": "omp",
+      "path": "skills/pstack/principle-type-system-discipline"
+    },
     "prototype": {
       "pack": "mattpocock",
       "path": "skills/engineering/prototype"
+    },
+    "recall": {
+      "pack": "omp",
+      "path": "skills/pstack/recall"
+    },
+    "receiving-code-review": {
+      "pack": "omp",
+      "path": "skills/installed/receiving-code-review"
+    },
+    "reflect": {
+      "pack": "omp",
+      "path": "skills/pstack/reflect"
+    },
+    "requesting-code-review": {
+      "pack": "omp",
+      "path": "skills/installed/requesting-code-review"
     },
     "research": {
       "pack": "mattpocock",
       "path": "skills/engineering/research"
     },
+    "resolving-merge-conflicts": {
+      "pack": "omp",
+      "path": "skills/installed/resolving-merge-conflicts"
+    },
     "retro": {
       "pack": "mattpocock",
       "path": "skills/engineering/retro"
+    },
+    "revealjs": {
+      "pack": "omp",
+      "path": "skills/installed/revealjs"
     },
     "review-and-ship": {
       "pack": "cursor",
@@ -122,9 +538,69 @@
       "pack": "cursor",
       "path": "cursor-team-kit/skills/run-smoke-tests"
     },
+    "safe-refactor": {
+      "pack": "omp",
+      "path": "skills/installed/safe-refactor"
+    },
+    "scaffold-exercises": {
+      "pack": "omp",
+      "path": "skills/installed/scaffold-exercises"
+    },
+    "setup-matt-pocock-skills": {
+      "pack": "omp",
+      "path": "skills/installed/setup-matt-pocock-skills"
+    },
+    "setup-pre-commit": {
+      "pack": "omp",
+      "path": "skills/installed/setup-pre-commit"
+    },
+    "setup-pstack": {
+      "pack": "omp",
+      "path": "skills/pstack/setup-pstack"
+    },
+    "setup-ts-deep-modules": {
+      "pack": "omp",
+      "path": "skills/installed/setup-ts-deep-modules"
+    },
+    "sharpen": {
+      "pack": "omp",
+      "path": "skills/pstack/sharpen"
+    },
+    "show-me-your-work": {
+      "pack": "omp",
+      "path": "skills/pstack/show-me-your-work"
+    },
     "skill-creator": {
       "pack": "anthropic",
       "path": "skills/skill-creator"
+    },
+    "slack-gif-creator": {
+      "pack": "omp",
+      "path": "skills/installed/slack-gif-creator"
+    },
+    "software-factory": {
+      "pack": "omp",
+      "path": "skills/mattpocock/software-factory"
+    },
+    "statechart": {
+      "pack": "omp",
+      "path": "skills/pstack/statechart"
+    },
+    "subagent-driven-development": {
+      "pack": "omp",
+      "path": "skills/installed/subagent-driven-development"
+    },
+    "surgical-patch": {
+      "pack": "omp",
+      "path": "skills/installed/surgical-patch"
+    },
+    "swarm": {
+      "pack": "omp",
+      "path": "skills/pstack/swarm"
+    },
+    "systematic-debugging": {
+      "pack": "omp",
+      "path": "skills/installed/systematic-debugging"
     },
     "tdd": {
       "pack": "mattpocock",
@@ -133,6 +609,14 @@
     "teach": {
       "pack": "mattpocock",
       "path": "skills/productivity/teach"
+    },
+    "technical-writing": {
+      "pack": "omp",
+      "path": "skills/pstack/technical-writing"
+    },
+    "test-driven-development": {
+      "pack": "omp",
+      "path": "skills/installed/test-driven-development"
     },
     "theme-factory": {
       "pack": "anthropic",
@@ -154,9 +638,33 @@
       "pack": "mattpocock",
       "path": "skills/engineering/to-tickets"
     },
+    "triage": {
+      "pack": "omp",
+      "path": "skills/installed/triage"
+    },
+    "typescript-best-practices": {
+      "pack": "omp",
+      "path": "skills/pstack/typescript-best-practices"
+    },
     "unslop": {
       "pack": "cursor",
       "path": "pstack/skills/unslop"
+    },
+    "using-git-worktrees": {
+      "pack": "omp",
+      "path": "skills/installed/using-git-worktrees"
+    },
+    "using-superpowers": {
+      "pack": "omp",
+      "path": "skills/installed/using-superpowers"
+    },
+    "verification-before-completion": {
+      "pack": "omp",
+      "path": "skills/installed/verification-before-completion"
+    },
+    "verify-and-stop": {
+      "pack": "omp",
+      "path": "skills/installed/verify-and-stop"
     },
     "verify-this": {
       "pack": "cursor",
@@ -165,6 +673,14 @@
     "wait-what": {
       "pack": "mattpocock",
       "path": "skills/productivity/wait-what"
+    },
+    "wayfinder": {
+      "pack": "omp",
+      "path": "skills/installed/wayfinder"
+    },
+    "web-artifacts-builder": {
+      "pack": "omp",
+      "path": "skills/installed/web-artifacts-builder"
     },
     "webapp-testing": {
       "pack": "anthropic",
@@ -178,6 +694,10 @@
       "pack": "cursor",
       "path": "cursor-team-kit/skills/what-did-i-get-done"
     },
+    "why": {
+      "pack": "omp",
+      "path": "skills/pstack/why"
+    },
     "wizard": {
       "pack": "mattpocock",
       "path": "skills/engineering/wizard"
@@ -186,9 +706,33 @@
       "pack": "cursor",
       "path": "cursor-team-kit/skills/workflow-from-chats"
     },
+    "writing-beats": {
+      "pack": "omp",
+      "path": "skills/installed/writing-beats"
+    },
     "writing-for-agents": {
       "pack": "mattpocock",
       "path": "skills/productivity/writing-for-agents"
+    },
+    "writing-fragments": {
+      "pack": "omp",
+      "path": "skills/installed/writing-fragments"
+    },
+    "writing-plans": {
+      "pack": "omp",
+      "path": "skills/installed/writing-plans"
+    },
+    "writing-shape": {
+      "pack": "omp",
+      "path": "skills/installed/writing-shape"
+    },
+    "writing-skills": {
+      "pack": "omp",
+      "path": "skills/installed/writing-skills"
+    },
+    "xlsx": {
+      "pack": "omp",
+      "path": "skills/installed/xlsx"
     }
   }
 }
