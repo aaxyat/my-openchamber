@@ -53,16 +53,16 @@
   "favoriteModels": [],
   "recentModels": [
     {
+      "providerID": "mistral",
+      "modelID": "deepseek-v4-1-flash-1017"
+    },
+    {
       "providerID": "9router",
       "modelID": "ag/gemini-3.8-flash"
     },
     {
       "providerID": "9router",
       "modelID": "oc/big-pickle"
-    },
-    {
-      "providerID": "mistral",
-      "modelID": "deepseek-v4-1-flash-1017"
     }
   ],
   "hiddenModels": [],
