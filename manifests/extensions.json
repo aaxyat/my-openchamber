@@ -18,8 +18,22 @@
       "repo": "https://github.com/openchamber/openchamber-resource-monitor",
       "commit": "ea43f7f650aae2cc97eafd978fc8981cfded42a8",
       "storageId": "8a10a767-fdf2-4c76-a91e-3199b5c5aef7",
-      "grants": [],
-      "scopes": {}
+      "grants": [
+        "service"
+      ],
+      "scopes": {
+        "service": {
+          "exec": [
+            "lsof",
+            "netstat",
+            "powershell",
+            "ps",
+            "taskkill",
+            "vm_stat"
+          ],
+          "sockets": []
+        }
+      }
     }
   }
 }

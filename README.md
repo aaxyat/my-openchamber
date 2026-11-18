@@ -94,7 +94,7 @@ git -C ~/.local/share/agent-tools/skill-packs/omp checkout FETCH_HEAD
 ## Notes
 
 - Quit OpenChamber before `apply` — a running instance rewrites `settings.json` on exit.
-- Extensions are cloned at pinned commits. If one needs a build step, run `bun install && bun run build` in its directory afterwards. Token Meter 1.9.0 and Resource Monitor 1.6.0 ship their built files, so neither needs it; Token Meter's `service` grant is recorded in the manifest, so it starts without a permission prompt.
+- Extensions are cloned at pinned commits. If one needs a build step, run `bun install && bun run build` in its directory afterwards. Token Meter 1.9.0 and Resource Monitor 1.6.0 ship their built files, so neither needs it; both extensions' `service` grants are recorded in the manifest, so they start without a permission prompt.
 - Reopen an extension panel after an update: OpenChamber does not reload an open panel's iframe when the extension underneath changes.
 - `~/.config/opencode/AGENTS.md` and `~/.agents/{AGENTS,RULES}.md` are symlinks into the `my-dsh` repo, not this one.
 - `apply --memory` is not a flag; capture memory with `./bin/oc-sync capture --memory` when you want agent memory to travel too.
